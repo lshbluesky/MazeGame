@@ -1,5 +1,6 @@
 ﻿#include <iostream>
 #include <conio.h>
+#include "Text.hpp"
 #include "fmod.hpp"
 using namespace std;
 using namespace FMOD;
@@ -28,6 +29,7 @@ public:
 
 int main(void)
 {
+	system("mode con:cols=120 lines=30");
 	StartMenu MenuControl;
 	MenuControl.InitStartMenu();
 
@@ -36,10 +38,11 @@ int main(void)
 	Fmod->createStream(".\\Sounds\\stage3.mp3", FMOD_LOOP_NORMAL, 0, &MainBGM); // 배경음악 사운드 객체 생성, 효과음은 createStream() 대신에 createSound() 함수를 사용하기
 	Fmod->playSound(MainBGM, 0, false, &channel1); // 배경음악 재생
 
-	cout << "\n사운드 재생 테스트..." << endl;
-	cout << "c키 : 스테이지 통과 효과음 재생" << endl;
-	cout << "d키 : 플레이어 사망 효과음 재생" << endl;
-	cout << "e키 : 종료." << endl;
+	gotoxy_C(10, 5, "사운드 재생 테스트...\n", DEEP_OC);
+	TextColor(DEEP_YELLOW);
+	gotoxy(10, 6, "c키 : 스테이지 통과 효과음 재생");
+	gotoxy(10, 7, "d키 : 플레이어 사망 효과음 재생");
+	gotoxy(10, 8, "e키 : 종료.");
 	Fmod->update();
 
 	while (1)
