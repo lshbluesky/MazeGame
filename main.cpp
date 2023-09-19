@@ -45,20 +45,21 @@ int main(void)
 	while (1)
 	{
 		Fmod->update(); // 사운드를 계속 재생하기 위해서는 While 문을 사용하여 Fmod->update() 가 계속 실행되어야 함.
-		if (_getch() == 'd')
+		switch (_getch())
 		{
-			Fmod->update();
-			Fmod->createSound(".\\Sounds\\die.mp3", FMOD_LOOP_OFF, 0, &die); // 플레이어 사망 효과음 객체 생성
-			Fmod->playSound(die, 0, false, &channel2); // 플레이어 사망 효과음 재생
-		}
-		else if (_getch() == 'c')
-		{
+		case 'c':
 			Fmod->update();
 			Fmod->createSound(".\\Sounds\\clear.mp3", FMOD_LOOP_OFF, 0, &stg_clear); // 스테이지 통과 효과음 객체 생성
 			Fmod->playSound(stg_clear, 0, false, &channel2); // 스테이지 통과 효과음 재생
-		}
-		if (_getch() == 'e')
 			break;
+		case 'd':
+			Fmod->update();
+			Fmod->createSound(".\\Sounds\\die.mp3", FMOD_LOOP_OFF, 0, &die); // 플레이어 사망 효과음 객체 생성
+			Fmod->playSound(die, 0, false, &channel2); // 플레이어 사망 효과음 재생
+			break;
+		case 'e':
+			return 0;
+		}
 	}
 
 	Fmod->release(); // 게임이 종료되기 전에 사운드 관련 객체 해제
