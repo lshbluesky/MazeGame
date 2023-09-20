@@ -35,10 +35,10 @@ int main(void)
 
 	FMOD::System_Create(&Fmod); // FMOD 라이브러리를 사용하기 위한 FMOD 시스템 객체 생성
 	Fmod->init(3, FMOD_INIT_NORMAL, extradriverdata); // 채널 개수 3으로 FMOD 라이브러리를 사용하기 위하여 준비 및 초기화
-	Fmod->createStream(".\\Sounds\\stage3.mp3", FMOD_LOOP_NORMAL, 0, &MainBGM); // 배경음악 사운드 객체 생성, 효과음은 createStream() 대신에 createSound() 함수를 사용하기
+	Fmod->createStream(".\\Sounds\\title.mp3", FMOD_LOOP_NORMAL, 0, &MainBGM); // 배경음악 사운드 객체 생성, 효과음은 createStream() 대신에 createSound() 함수를 사용하기
 	Fmod->playSound(MainBGM, 0, false, &channel1); // 배경음악 재생
 
-	gotoxy_C(10, 5, "사운드 재생 테스트...\n", DEEP_OC);
+	gotoxy(10, 5, "사운드 재생 테스트...\n", DEEP_OC);
 	TextColor(DEEP_YELLOW);
 	gotoxy(10, 6, "c키 : 스테이지 통과 효과음 재생");
 	gotoxy(10, 7, "d키 : 플레이어 사망 효과음 재생");
