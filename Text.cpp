@@ -13,18 +13,18 @@ void gotoxy(int x, int y, const char* s)
 }
 
 // 위치를 지정하고 색깔도 추가로 지정하여 해당 컬러로 문자열을 한 글자씩 출력
-void gotoxy_C(int x, int y, const char* s, int Color)
+void gotoxy(int x, int y, const char* s, int Color)
 {
 	COORD pos;
 	pos.X = x;
 	pos.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-	Speak_C(s, Color); // 받은 문자열을 받은 색깔로 한 글자씩 자연스럽게 출력 
+	Speak(s, Color); // 받은 문자열을 받은 색깔로 한 글자씩 자연스럽게 출력 
 }
 
 // 흰색으로 한 글자씩 문자열 출력
 void Speak(const char speaking[])
-{ // 흰색으로 한 글자씩
+{
 	int i = 0;
 	TextColor(DEEP_WHITE);
 	for (; i < str_num(speaking); i++)
@@ -34,7 +34,7 @@ void Speak(const char speaking[])
 }
 
 // 흰색이 아닌 다른 색을 인수로 직접 전달하여 해당 컬러로 문자열 출력
-void Speak_C(const char speaking[], int C)
+void Speak(const char speaking[], int C)
 {
 	int i = 0;
 	TextColor(C);
