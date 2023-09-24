@@ -21,9 +21,15 @@
     <ClCompile Include="Text.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Plyer_move.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Text.hpp">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Plyer_move.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
