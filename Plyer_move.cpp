@@ -1,16 +1,16 @@
-/*
-¸¸µç »ç¶÷: ½ÅÂùÈñ
-Å¬·¡½º´Â 2°³ »ç¿ë ¿¹Á¤(Player, Move)
-Player Å¬·¡½º¿¡¼­´Â À§Ä¡Á¤º¸¿Í Ãß°¡µÉ ±â´É(ÆøÅº, ÀûÀÇ °æ·Î)
-Move Å¬·¡½º¿¡¼­´Â ÀÌµ¿°ú Ãß°¡µÉ ±â´É(º® ¹Ğ±â, ÀûÀÇ ¿òÁ÷ÀÓ)
-Player´Â °¡´ÉÇÏ´Ù¸é ½Ì±ÛÅæµµ °í·Á
+ï»¿/*
+ë§Œë“  ì‚¬ëŒ: ì‹ ì°¬í¬
+í´ë˜ìŠ¤ëŠ” 2ê°œ ì‚¬ìš© ì˜ˆì •(Player, Move)
+Player í´ë˜ìŠ¤ì—ì„œëŠ” ìœ„ì¹˜ì •ë³´ì™€ ì¶”ê°€ë  ê¸°ëŠ¥(í­íƒ„, ì ì˜ ê²½ë¡œ)
+Move í´ë˜ìŠ¤ì—ì„œëŠ” ì´ë™ê³¼ ì¶”ê°€ë  ê¸°ëŠ¥(ë²½ ë°€ê¸°, ì ì˜ ì›€ì§ì„)
+PlayerëŠ” ê°€ëŠ¥í•˜ë‹¤ë©´ ì‹±ê¸€í†¤ë„ ê³ ë ¤
 */
 
 #include <random>
-#include <conio.h>			//getch¿¡ ÇÊ¿ä
-#include <windows.h>		//gotoxy¿¡ ÇÊ¿ä
-#include "Plyer_move.h"
-
+#include <conio.h>			// _getch() í•¨ìˆ˜ì—ì„œ í•„ìš”
+#include <windows.h>		// COORD ë“±ì„ ì‚¬ìš©í•˜ëŠ” isWall() í•¨ìˆ˜ì—ì„œ í•„ìš”
+#include "Text.hpp"
+#include "Plyer_move.hpp"
 using namespace std;
 
 class Player
@@ -18,22 +18,21 @@ class Player
 private:
 	int x = NULL;
 	int y = NULL;
-
-	//ÇöÀç À§Ä¡
+	// í˜„ì¬ ìœ„ì¹˜
 
 	int prev_x;
 	int prev_y;
-	//ÀÌÀü À§Ä¡
+	// ì´ì „ ìœ„ì¹˜
 public:
 	Player(int start_x, int start_y) : x(start_x), y(start_y), prev_x(start_x), prev_y(start_y) {}
-	//ÀÌÀü¡¤ÇöÀçÀ§Ä¡¸¦ ½ÃÀÛÀ§Ä¡·Î ÃÊ±âÈ­
+	// ì´ì „Â·í˜„ì¬ìœ„ì¹˜ë¥¼ ì‹œì‘ìœ„ì¹˜ë¡œ ì´ˆê¸°í™”
 
-	void Move(int direction) {		//ÀÔ·Â¹Ş¾Æ Çàµ¿ÇÏ´Â ÇÔ¼ö
+	void Move(int direction) {		// ì…ë ¥ë°›ì•„ í–‰ë™í•˜ëŠ” í•¨ìˆ˜
 		prev_x = x;
 		prev_y = y;
-		//ÇöÀç À§Ä¡¸¦ ±â·Ï
+		// í˜„ì¬ ìœ„ì¹˜ë¥¼ ê¸°ë¡
 
-		switch (direction)			//ÀÔ·Â¿¡ µû¸¥ Çàµ¿ Á¤ÀÇ
+		switch (direction)			// ì…ë ¥ì— ë”°ë¥¸ í–‰ë™ ì •ì˜
 		{
 		case UP:
 			y--; break;
@@ -45,12 +44,11 @@ public:
 			x++; break;
 		}
 
-		int new_x = x;		//ÀÌµ¿ÇÑ À§Ä¡¸¦ ±â·Ï
+		int new_x = x;		// ì´ë™í•œ ìœ„ì¹˜ë¥¼ ê¸°ë¡
 		int new_y = y;
 
-
-		//ÀÌµ¿ À§Ä¡°¡ º®ÀÏ °æ¿ì(isWall()ÀÇ ¹İÈ¯°ªÀÌ trueÀÏ °æ¿ì) >>>  ÀÌÀü À§Ä¡·Î µ¹¾Æ°¨
-		//ÀÌµ¿ À§Ä¡°¡ º®ÀÌ ¾Æ´Ò °æ¿ì(isWall()ÀÇ ¹İÈ¯°ªÀÌ falseÀÏ °æ¿ì) >>>  ÇØ´ç À§Ä¡·Î ÀÌµ¿	
+		// ì´ë™ ìœ„ì¹˜ê°€ ë²½ì¼ ê²½ìš°(isWall()ì˜ ë°˜í™˜ê°’ì´ trueì¼ ê²½ìš°) >>>  ì´ì „ ìœ„ì¹˜ë¡œ ëŒì•„ê°
+		// ì´ë™ ìœ„ì¹˜ê°€ ë²½ì´ ì•„ë‹ ê²½ìš°(isWall()ì˜ ë°˜í™˜ê°’ì´ falseì¼ ê²½ìš°) >>>  í•´ë‹¹ ìœ„ì¹˜ë¡œ ì´ë™	
 		if (!isWall(new_x, new_y)) {
 			x = new_x;
 			y = new_y;
@@ -61,14 +59,12 @@ public:
 		}
 	}
 
-	//»ç½Ç»ó ÇÃ·¹ÀÌ¾î À§Ä¡¸¸ Ç¥±âÇÏ¸é ‰Î
-	void print() {					//È­¸é °»½Å
-
-		gotoxy(x, y);				//ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡´Â ¡Ú·Î Ç¥±â
-		cout << "¡Ú";
+	// ì‚¬ì‹¤ìƒ í”Œë ˆì´ì–´ ìœ„ì¹˜ë§Œ í‘œê¸°í•˜ë©´ ë¨.
+	void print() {					// í™”ë©´ ê°±ì‹ 
+		gotoxy(x, y, "â˜…");				// í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ëŠ” â˜…ë¡œ í‘œê¸°
 	}
 
-	int get_x() {			//³ªÁß¿¡ x,y À§Ä¡ ÇÊ¿äÇÒ ¶§ ¾²´Â°Å
+	int get_x() {			// ë‚˜ì¤‘ì— x,y ìœ„ì¹˜ í•„ìš”í•  ë•Œ ì“°ëŠ”ê±°
 		return x;
 	}
 	int get_y() {
@@ -76,26 +72,23 @@ public:
 	}
 };
 
+int start_x, start_y; // ì‹œì‘ ìœ„ì¹˜ ë³€ìˆ˜ ì €ì¥ìš©
 
-int start_x, start_y; //½ÃÀÛ À§Ä¡ º¯¼ö ÀúÀå¿ë
+// ì•„ë˜ í•¨ìˆ˜ ë‚´ìš©ì€ ê·¸ëƒ¥ mainì— ë³µë¶™í•˜ëŠ” í¸ì´ í¸í• ë“¯, ìµœì†Œí•œ Randomstartë‘ PlayerëŠ” í•´ì•¼í•¨
+void Playing() {
+	char input;				// ì…ë ¥ ì €ì¥ìš© ë³€ìˆ˜
 
-//¾Æ·¡ ÇÔ¼ö ³»¿ëÀº ±×³É main¿¡ º¹ºÙÇÏ´Â ÆíÀÌ ÆíÇÒµí, ÃÖ¼ÒÇÑ Randomstart¶û Player´Â ÇØ¾ßÇÔ
-int Playing() {
+	RandomStart(5, 5);		// ë¯¸ë¡œ ë²”ìœ„ë¥¼ ë°›ë„ë¡
+	Player player(start_x, start_y);		// ê°ì²´ ìƒì„±, RandomStart ë‚˜ì¤‘ ë¨¼ì € ìƒê´€ ì—†ì„ë“¯?
 
-	char input;				//ÀÔ·Â ÀúÀå¿ë º¯¼ö
-
-	RandomStart(5, 5);		//¹Ì·Î ¹üÀ§¸¦ ¹Şµµ·Ï
-	Player player(start_x, start_y);		//°´Ã¼ »ı¼º, RandomStart ³ªÁß ¸ÕÀú »ó°ü ¾øÀ»µí?
-
-
-	while (true)			//ÀÔ·ÂÀ» ¹ŞÀ¸¸é ¿òÁ÷ÀÌµµ·Ï
+	while (true)			// ì…ë ¥ì„ ë°›ìœ¼ë©´ ì›€ì§ì´ë„ë¡
 	{
 		player.print();
-		cursor(0);			//0 = ±ôºıÀÓ Á¦°Å / 1 = ±ôºıÀÓ »ı¼º
+		cursor(0);			// 0 = ê¹œë¹¡ì„ ì œê±° / 1 = ê¹œë¹¡ì„ ìƒì„±
 
-		if (kbhit()) {		//kbhit() <<< Å°º¸µå ÀÔ·Â È®ÀÎ
+		if (kbhit()) {		// kbhit() <<< í‚¤ë³´ë“œ ì…ë ¥ í™•ì¸
 
-			input = getch();//ÀÔ·Â ÀúÀå
+			input = getch(); // ì…ë ¥ ì €ì¥
 
 			switch (input)
 			{
@@ -106,21 +99,12 @@ int Playing() {
 				player.Move(input); break;
 			}
 		}
-		Sleep(5);			//5ms °£°İÀ¸·Î È­¸é °»½Å
-		system("cls");		//È­¸é °»½Å
+		Sleep(5);			// 5ms ê°„ê²©ìœ¼ë¡œ í™”ë©´ ê°±ì‹ 
+		system("cls");		// í™”ë©´ ê°±ì‹ 
 	}
 }
 
-void gotoxy(int x, int y) {
-
-	COORD pos = { x,y };
-
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-
-}
-
 void cursor(int n) {
-
 	HANDLE hConsole;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
 
@@ -131,38 +115,37 @@ void cursor(int n) {
 	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
 }
 
-//½ÃÀÛ À§Ä¡¸¦ ·£´ıÇÏ°Ô, ¹Ì·ÎÀÇ ÃÖ´ë ¹üÀ§¸¦ ¹Şµµ·Ï
+// ì‹œì‘ ìœ„ì¹˜ë¥¼ ëœë¤í•˜ê²Œ, ë¯¸ë¡œì˜ ìµœëŒ€ ë²”ìœ„ë¥¼ ë°›ë„ë¡
 int RandomStart(int max_x, int max_y) {
-
 	random_device rd;
-	mt19937  generator(rd());			//mt19937 ¿£Áø »ç¿ë
+	mt19937  generator(rd());			// mt19937 ì—”ì§„ ì‚¬ìš©
 
-	//x, yÀÇ ÃÖ´ë ¹üÀ§ ³»ÀÇ °ªÀ» »ı¼ºÇÏ´Â distribution
-	uniform_int_distribution<int> distribution_x(0, max_x); // x ÁÂÇ¥ÀÇ ¹üÀ§
-	uniform_int_distribution<int> distribution_y(0, max_y); // y ÁÂÇ¥ÀÇ ¹üÀ§
+	// x, yì˜ ìµœëŒ€ ë²”ìœ„ ë‚´ì˜ ê°’ì„ ìƒì„±í•˜ëŠ” distribution
+	uniform_int_distribution<int> distribution_x(0, max_x); // x ì¢Œí‘œì˜ ë²”ìœ„
+	uniform_int_distribution<int> distribution_y(0, max_y); // y ì¢Œí‘œì˜ ë²”ìœ„
 
 	do {
-		start_x = distribution_x(generator);			//¹«ÀÛÀ§ À§Ä¡¿¡¼­ ½ÃÀÛ
+		start_x = distribution_x(generator); // ë¬´ì‘ìœ„ ìœ„ì¹˜ì—ì„œ ì‹œì‘
 		start_y = distribution_y(generator);
 
-	} while (isWall(start_x, start_y)); // ¸¸¾à (x, y)°¡ º®À¸·Î ÆÇÁ¤µÇ¸é ´Ù½Ã À§Ä¡¸¦ ·£´ıÇÏ°Ô ¼±ÅÃ, isWall ÇÔ¼ö·Î º® ÆÇÁ¤À» ÇÑ´Ù°í °¡Á¤
+	} while (isWall(start_x, start_y)); // ë§Œì•½ (x, y)ê°€ ë²½ìœ¼ë¡œ íŒì •ë˜ë©´ ë‹¤ì‹œ ìœ„ì¹˜ë¥¼ ëœë¤í•˜ê²Œ ì„ íƒ, isWall í•¨ìˆ˜ë¡œ ë²½ íŒì •ì„ í•œë‹¤ê³  ê°€ì •
 
 	return start_x, start_y;
 }
 
-//ÇØ´ç À§Ä¡°¡ º®ÀÎÁö È®ÀÎÇÏ´Â ÇÔ¼ö / ¿©±â¼­´Â º®À» ¹®ÀÚ '#'À¸·Î Á¤ÀÇ
+// í•´ë‹¹ ìœ„ì¹˜ê°€ ë²½ì¸ì§€ í™•ì¸í•˜ëŠ” í•¨ìˆ˜ / ì—¬ê¸°ì„œëŠ” ë²½ì„ ë¬¸ì '#'ìœ¼ë¡œ ì •ì˜
 bool isWall(int x, int y) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);		//ÄÜ¼Ö°ú »óÈ£ÀÛ¿ëÇÏ±â À§ÇÑ ÇÚµé
-	CHAR_INFO Pos_buffer;									//È­¸é ¹®ÀÚ¸¦ ÀúÀåÇÒ º¯¼ö
-	COORD bufferSize = { 1, 1 };							//1x1 Å©±âÀÇ ¹®ÀÚ¸¦ ÀĞ°í ÀúÀå
-	COORD bufferCoord = { 0, 0 };							//ÁÂ»ó´ÜºÎÅÍ ¹®ÀÚ¸¦ ÀĞÀ½
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);		// ì½˜ì†”ê³¼ ìƒí˜¸ì‘ìš©í•˜ê¸° ìœ„í•œ í•¸ë“¤
+	CHAR_INFO Pos_buffer;									// í™”ë©´ ë¬¸ìë¥¼ ì €ì¥í•  ë³€ìˆ˜
+	COORD bufferSize = { 1, 1 };							// 1x1 í¬ê¸°ì˜ ë¬¸ìë¥¼ ì½ê³  ì €ì¥
+	COORD bufferCoord = { 0, 0 };							// ì¢Œìƒë‹¨ë¶€í„° ë¬¸ìë¥¼ ì½ìŒ
 
-	//ÀĞ¾î¿Ã È­¸é ¿µ¿ªÀ» ¼³Á¤, ÇöÀç À§Ä¡ÀÇ 1x1 Å©±âÀÇ ¿µ¿ªÀ» ÀĞÀ½
+	// ì½ì–´ì˜¬ í™”ë©´ ì˜ì—­ì„ ì„¤ì •, í˜„ì¬ ìœ„ì¹˜ì˜ 1x1 í¬ê¸°ì˜ ì˜ì—­ì„ ì½ìŒ
 	SMALL_RECT readRegion = { static_cast<SHORT>(x), static_cast<SHORT>(y), static_cast<SHORT>(x), static_cast<SHORT>(y) };
 
-	// ÇöÀç À§Ä¡ÀÇ È­¸é ¹®ÀÚ¸¦ ÀĞ°í Pos_buffer¿¡ ÀúÀå
+	// í˜„ì¬ ìœ„ì¹˜ì˜ í™”ë©´ ë¬¸ìë¥¼ ì½ê³  Pos_bufferì— ì €ì¥
 	ReadConsoleOutput(hConsole, &Pos_buffer, bufferSize, bufferCoord, &readRegion);
 
-	// ÀĞ¾î¿Â ¹®ÀÚ°¡ '#'(º®) ¹®ÀÚÀÎÁö È®ÀÎÇÏ¿© ¹İÈ¯
+	// ì½ì–´ì˜¨ ë¬¸ìê°€ '#'(ë²½) ë¬¸ìì¸ì§€ í™•ì¸í•˜ì—¬ ë°˜í™˜
 	return (Pos_buffer.Char.AsciiChar == '#');
 }

@@ -134,7 +134,7 @@
     <ClCompile Include="Text.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Plyer_move.h" />
+    <ClInclude Include="Plyer_move.hpp" />
     <ClInclude Include="Text.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

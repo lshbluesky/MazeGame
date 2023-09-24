@@ -2,6 +2,7 @@
 #include <conio.h>
 #include "Text.hpp"
 #include "fmod.hpp"
+#include "Plyer_move.hpp"
 using namespace std;
 using namespace FMOD;
 
