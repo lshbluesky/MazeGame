@@ -3,6 +3,14 @@
 #include "Text.hpp"
 #include "fmod.hpp"
 #include "Plyer_move.hpp"
+
+// 키보드 값
+#define UP 0
+#define DOWN 1
+#define LEFT 2
+#define RIGHT 3
+#define SUBMIT 4
+
 using namespace std;
 using namespace FMOD;
 
@@ -19,12 +27,71 @@ void* extradriverdata(nullptr); // FMOD 라이브러리의 init()에서 사용�
 // 메인 화면을 그리기 위한 클래스 생성
 class StartMenu {
 private:
-	void DrawStartMenu() {
-		cout << "이 부분에 메인 화면을 구성합니다.\n";
+	void DrawStartMenu() { // 화면 그리기
+		cout << "\n\n\n\n";
+		cout << "         #####     ###     ###     #     ####    ##### \n";
+		cout << "         #        #       #       # #    #   #   #     \n";
+		cout << "         #####    ####    #      #####   ####    ####  \n";
+		cout << "         #            #   #      #   #   #       #     \n";
+		cout << "         #####    ####     ###   #   #   #       ##### \n";
 	}
+
+
+	int keyControl() {
+		char temp = getch();
+
+		if (temp == 'w' || temp == 'W') {
+			return UP;
+		}
+		else if (temp == 'a' || temp == 'A') {
+			return LEFT;
+		}
+		else if (temp == 's' || temp == 'S') {
+			return DOWN;
+		}
+		else if (temp == 'd' || temp == 'D') {
+			return RIGHT;
+		}
+		else if (temp == ' ') { // 스페이스바(공백)가 선택 버튼
+			return SUBMIT;
+		}
+	}
+
 public:
 	void InitStartMenu() {
-		StartMenu::DrawStartMenu();
+		StartMenu::DrawStartMenu(); // 캡슐화, 정보은닉
+	}
+
+	int DrawMenu() { // gotoxy함수를 사용한 메뉴 위치 생성
+		int x = 24;
+		int y = 12;
+		gotoxy(x - 2, y, "> 게 임 시 작");
+		gotoxy(x, y + 1, "게 임 정 보");
+		gotoxy(x, y + 2, "   종료   ");
+
+		while (1) {
+			int n = keyControl(); //  키보드 이벤트를 키값으로 받아오기
+			switch (n) {
+			case UP: { // 입력된 키의 값이 UP인 경우 (w)
+				if (y > 12) { // y는 12~14까지만 이동
+					gotoxy(x - 2, y, " "); // x-2하는 이유는 ">"를 두 칸 이전에 출력하기 위해 / " " : 원래 위치 지움
+					gotoxy(x - 2, --y, ">"); // 새로 이동한 위치로 이동 / ">" 다시 그리기
+				}
+				break;
+			}
+			case DOWN: { // 입력된 키의 값이 UP인 경우 (s)
+				if (y < 14) { // 최대 14
+					gotoxy(x - 2, y, " ");
+					gotoxy(x - 2, ++y, ">");
+				}
+				break;
+			}
+			case SUBMIT: {
+				return y - 12;
+			}
+			}
+		}
+
 	}
 };
 
@@ -33,6 +100,7 @@ int main(void)
 	system("mode con:cols=120 lines=30");
 	StartMenu MenuControl;
 	MenuControl.InitStartMenu();
+	MenuControl.DrawMenu();
 
 	FMOD::System_Create(&Fmod); // FMOD 라이브러리를 사용하기 위한 FMOD 시스템 객체 생성
 	Fmod->init(3, FMOD_INIT_NORMAL, extradriverdata); // 채널 개수 3으로 FMOD 라이브러리를 사용하기 위하여 준비 및 초기화
