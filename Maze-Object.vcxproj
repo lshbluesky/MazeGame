@@ -135,7 +135,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Player_move.hpp" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Text.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Maze-Object.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="MazeIcon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
