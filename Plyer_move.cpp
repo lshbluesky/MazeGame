@@ -1,17 +1,60 @@
-﻿/*
-만든 사람: 신찬희
-클래스는 2개 사용 예정(Player, Move)
-Player 클래스에서는 위치정보와 추가될 기능(폭탄, 적의 경로)
-Move 클래스에서는 이동과 추가될 기능(벽 밀기, 적의 움직임)
-Player는 가능하다면 싱글톤도 고려
-*/
-
-#include <random>
+﻿#include <random>
 #include <conio.h>			// _getch() 함수에서 필요
 #include <windows.h>		// COORD 등을 사용하는 isWall() 함수에서 필요
 #include "Text.hpp"
 #include "Plyer_move.hpp"
 using namespace std;
+
+class Move {
+private:
+	int& x;
+	int& y;
+	int prev_x;
+	int prev_y;
+
+public:
+	Move(int& x, int& y) : x(x), y(y), prev_x(x), prev_y(y) {}
+
+	void MoveUp() {
+		prev_x = x;
+		prev_y = y;
+		y--;
+		if (isWall(x, y)) {
+			x = prev_x;
+			y = prev_y;
+		}
+	}
+
+	void MoveDown() {
+		prev_x = x;
+		prev_y = y;
+		y++;
+		if (isWall(x, y)) {
+			x = prev_x;
+			y = prev_y;
+		}
+	}
+
+	void MoveLeft() {
+		prev_x = x;
+		prev_y = y;
+		x--;
+		if (isWall(x, y)) {
+			x = prev_x;
+			y = prev_y;
+		}
+	}
+
+	void MoveRight() {
+		prev_x = x;
+		prev_y = y;
+		x++;
+		if (isWall(x, y)) {
+			x = prev_x;
+			y = prev_y;
+		}
+	}
+};
 
 class Player
 {
@@ -20,43 +63,26 @@ private:
 	int y = NULL;
 	// 현재 위치
 
-	int prev_x;
-	int prev_y;
-	// 이전 위치
 public:
-	Player(int start_x, int start_y) : x(start_x), y(start_y), prev_x(start_x), prev_y(start_y) {}
-	// 이전·현재위치를 시작위치로 초기화
+	Player(int start_x, int start_y) : x(start_x), y(start_y) {}
+	// 현재위치를 시작위치로 초기화
 
-	void Move(int direction) {		// 입력받아 행동하는 함수
-		prev_x = x;
-		prev_y = y;
-		// 현재 위치를 기록
+	void Input_Processing(int direction) {		// 입력받아 행동하는 함수
+		
+		Move move(x, y);
 
 		switch (direction)			// 입력에 따른 행동 정의
 		{
 		case UP:
-			y--; break;
+			move.MoveUp(); break;
 		case DOWN:
-			y++; break;
+			move.MoveDown(); break;
 		case LEFT:
-			x--; break;
+			move.MoveLeft(); break;
 		case RIGHT:
-			x++; break;
+			move.MoveRight(); break;
 		}
 
-		int new_x = x;		// 이동한 위치를 기록
-		int new_y = y;
-
-		// 이동 위치가 벽일 경우(isWall()의 반환값이 true일 경우) >>>  이전 위치로 돌아감
-		// 이동 위치가 벽이 아닐 경우(isWall()의 반환값이 false일 경우) >>>  해당 위치로 이동	
-		if (!isWall(new_x, new_y)) {
-			x = new_x;
-			y = new_y;
-		}
-		else {
-			x = prev_x;
-			y = prev_y;
-		}
 	}
 
 	// 사실상 플레이어 위치만 표기하면 됨.
@@ -71,6 +97,7 @@ public:
 		return y;
 	}
 };
+
 
 int start_x, start_y; // 시작 위치 변수 저장용
 
@@ -96,7 +123,7 @@ void Playing() {
 			case DOWN:
 			case LEFT:
 			case RIGHT:
-				player.Move(input); break;
+				player.Input_Processing(input); break;
 			}
 		}
 		Sleep(5);			// 5ms 간격으로 화면 갱신
