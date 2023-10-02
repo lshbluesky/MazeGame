@@ -2,7 +2,7 @@
 #include <conio.h>			// _getch() 함수에서 필요
 #include <windows.h>		// COORD 등을 사용하는 isWall() 함수에서 필요
 #include "Text.hpp"
-#include "Plyer_move.hpp"
+#include "Player_move.hpp"
 using namespace std;
 
 class Move {
