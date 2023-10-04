@@ -17,6 +17,7 @@ using namespace FMOD;
 //FMOD 라이브러리 및 사운드 출력을 위한 전역 변수 정의
 FMOD::System* Fmod(nullptr); // FMOD 라이브러리를 사용하기 위한 Fmod 시스템 클래스를 가리키는 Fmod 포인터 생성
 FMOD::Sound* MainBGM(nullptr); // 배경음악을 재생하기 위한 사운드 객체를 가리키는 MainBGM 포인터 생성
+FMOD::Sound* StageBGM(nullptr); // 스테이지 선택 메뉴 음악을 재생하기 위한 사운드 객체를 가리키는 StageBGM 포인터 생성
 FMOD::Sound* Die(nullptr); // 플레이어 사망 효과음 재생 포인터 생성
 FMOD::Sound* Select(nullptr); // 선택 효과음 재생 포인터 생성
 FMOD::Sound* Stage_Clear(nullptr); // 스테이지 통과 효과음 재생 포인터 생성
@@ -170,6 +171,86 @@ void DrawGameInfo() // 게임 정보 화면을 출력하는 함수
 	system("cls");
 }
 
+int DrawStageMenu() { // 플레이어 연령 별 스테이지를 선택하는 화면을 출력하는 함수
+	TextColor(DEEP_WHITE); // 메인 화면의 테두리와 디자인 요소는 그대로 출력
+	gotoxy(2, 1, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	gotoxy(2, 2, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 27, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 28, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	TextColor(DEEP_YELLOW);
+	gotoxy(6, 25, "★ 즐거운 BGM과 함께하는 아찔아찔 미로게임~♬");
+	TextColor(DEEP_WHITE);
+	gotoxy(70, 25, "Made by Object");
+	TextColor(DEEP_OC);
+	gotoxy(66, 25, "▦");
+	gotoxy(86, 25, "▦");
+	TextColor(DEEP_JAJU);
+	gotoxy(68, 25, "δ");
+	gotoxy(84, 25, "δ");
+
+	TextColor(DEEP_OC); // 이 부분부터 미로 게임의 스테이지 메뉴 정보를 입력
+	gotoxy(6, 5, "※ 스테이지 메뉴 정보 및 선택 ※");
+	TextColor(DEEP_YELLOW);
+	gotoxy(6, 8, "▦ 유아용 스테이지");
+	gotoxy(31, 8, "▦ 일반 플레이어용 스테이지");
+	gotoxy(62, 8, "▦ 노인분들을 위한 스테이지");
+	TextColor(DEEP_WHITE);
+	gotoxy(62, 5, "0. 이전의 메인 화면으로 이동");
+	gotoxy(6, 10, "1. Level 1");
+	gotoxy(6, 11, "2. Level 2");
+	gotoxy(31, 10, "3. Level 1");
+	gotoxy(31, 11, "4. Level 2");
+	gotoxy(62, 10, "5. Level 1");
+	gotoxy(62, 11, "6. Level 2");
+
+	unsigned int menu; // 스테이지 메뉴 번호를 입력받아서 저장할 menu 변수를 선언.
+	gotoxy(6, 21, "▦ 플레이하려는 스테이지 번호 입력 : ", DEEP_OC);
+	cin >> menu; // 스테이지 메뉴 번호를 입력받아서 menu 변수에 저장.
+	Fmod->playSound(Select, 0, false, &channel2); // 선택 효과음 재생
+	Fmod->update();
+	return menu; // 입력받은 스테이지 메뉴 번호를 반환. (StageMenu 함수의 switch 문에서 이의 반환값이 사용됨.)
+}
+
+int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
+	Fmod->createStream(".\\Sounds\\Menu_SelectStage.ogg", FMOD_LOOP_NORMAL, 0, &StageBGM); // 스테이지 선택 메뉴 배경음악 사운드 객체 생성,
+	Fmod->playSound(StageBGM, 0, false, &channel1); // 스테이지 선택 메뉴 배경음악 재생
+	Fmod->update();
+	while (1)
+	{
+		Fmod->update();
+		switch (DrawStageMenu())
+		{
+		case 1: // 유아용 스테이지의 Level 1을 선택한 경우
+			system("cls");
+			break;
+		case 2: // 유아용 스테이지의 Level 2를 선택한 경우
+			system("cls");
+			break;
+		case 3: // 일반 플레이어용 스테이지의 Level 1을 선택한 경우
+			system("cls");
+			break;
+		case 4: // 일반 플레이어용 스테이지의 Level 2를 선택한 경우
+			system("cls");
+			break;
+		case 5: // 노인분들을 위한 스테이지의 Level 1을 선택한 경우
+			system("cls");
+			break;
+		case 6: // 노인분들을 위한 스테이지의 Level 2를 선택한 경우
+			system("cls");
+			break;
+		case 0: // 메인 화면으로 돌아가는 메뉴를 선택한 경우
+			Fmod->playSound(StageBGM, 0, true, &channel1); // 메인 화면으로 돌아가므로 스테이지 선택 메뉴 배경음악 재생 정지
+			system("cls");
+			return 0;
+		default:
+			gotoxy(6, 23, "※ 잘못된 스테이지 번호입니다. ", DEEP_RED);
+			system("pause");
+			system("cls");
+			continue;
+		}
+	}
+}
+
 int main(void)
 {
 	FMOD::System_Create(&Fmod); // FMOD 라이브러리를 사용하기 위한 FMOD 시스템 객체 생성
@@ -183,10 +264,19 @@ int main(void)
 
 	while (1)
 	{
+		Fmod->update();
 		switch (MenuControl.InitStartMenu()) // 메인 화면에서 선택한 메뉴에 해당하는 값으로 메뉴를 판단 (DrawMenu 함수의 return y - 14; 구문에서 반환되는 값)
 		{
 		case 0: // 게임 시작을 선택한 경우
-			break;
+			Fmod->playSound(MainBGM, 0, true, &channel1); // 스테이지 선택 메뉴로 이동하므로 기존에 재생하던 배경음악 재생 정지
+			Fmod->update();
+			system("cls");
+			if (StageMenu() == 0) // 스테이지 선택 메뉴에서 메인 화면으로 돌아가는 메뉴를 선택한 경우 (반환값이 0인 경우)
+			{
+				Fmod->playSound(MainBGM, 0, false, &channel1); // 배경음악 다시 재생
+				Fmod->update();
+				break;
+			}
 		case 1: // 게임 정보를 선택한 경우
 			system("cls");
 			DrawGameInfo();
