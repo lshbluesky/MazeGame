@@ -1,4 +1,4 @@
-#include <random>
+﻿#include <random>
 #include <conio.h>			// _getch() 함수에서 필요
 #include <windows.h>		// COORD 등을 사용하는 isWall() 함수에서 필요
 #include "Text.hpp"
@@ -87,7 +87,7 @@ public:
 
 	// 사실상 플레이어 위치만 표기하면 됨.
 	void print() {					// 화면 갱신
-		gotoxy(x, y, "★");				// 플레이어의 위치는 ★로 표기
+		gotoxy(x, y, "\u2605");				// 플레이어의 위치는 ★로 표기
 	}
 
 	int get_x() {			// 나중에 x,y 위치 필요할 때 쓰는거
@@ -162,17 +162,17 @@ int RandomStart(int max_x, int max_y) {
 
 // 해당 위치가 벽인지 확인하는 함수 / 여기서는 벽을 문자 '#'으로 정의
 bool isWall(int x, int y) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);		// 콘솔과 상호작용하기 위한 핸들
-	CHAR_INFO Pos_buffer;									// 화면 문자를 저장할 변수
-	COORD bufferSize = { 1, 1 };							// 1x1 크기의 문자를 읽고 저장
-	COORD bufferCoord = { 0, 0 };							// 좌상단부터 문자를 읽음
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);	// 콘솔과 상호작용하기 위한 핸들
+	CHAR_INFO Pos_buffer;								// 화면 문자를 저장할 변수
+	COORD bufferSize = { 2, 1 };						// 2x1 크기의 문자를 읽고 저장 (full-width character)
+	COORD bufferCoord = { 0, 0 };						// 좌상단부터 문자를 읽음
 
-	// 읽어올 화면 영역을 설정, 현재 위치의 1x1 크기의 영역을 읽음
-	SMALL_RECT readRegion = { static_cast<SHORT>(x), static_cast<SHORT>(y), static_cast<SHORT>(x), static_cast<SHORT>(y) };
+	// 읽어올 화면 영역을 설정, 현재 위치의 2x1 크기의 영역을 읽음
+	SMALL_RECT readRegion = { static_cast<SHORT>(x), static_cast<SHORT>(y), static_cast<SHORT>(x + 1), static_cast<SHORT>(y) };
 
 	// 현재 위치의 화면 문자를 읽고 Pos_buffer에 저장
 	ReadConsoleOutput(hConsole, &Pos_buffer, bufferSize, bufferCoord, &readRegion);
 
-	// 읽어온 문자가 '#'(벽) 문자인지 확인하여 반환
-	return (Pos_buffer.Char.AsciiChar == '#');
+	// 읽어온 문자가 '■' 문자인지 확인하여 반환
+	return (Pos_buffer.Char.UnicodeChar == L'■');
 }
