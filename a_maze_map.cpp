@@ -6,7 +6,7 @@
 using namespace std;
 
 const int N = 11; // 미로의 크기 (홀수로 설정)
-vector<vector<int>> maze(N, vector<int>(N, 1)); // 미로를 나타내는 2D 벡터 (1은 벽, 0은 길)
+vector<vector<int>> maze(N, vector<int>(N, 1)); //(1은 벽, 0은 길)
 
 int dx[] = { 0, 1, 0, -1 }; // 상하좌우 이동을 위한 배열
 int dy[] = { -1, 0, 1, 0 };
@@ -21,11 +21,11 @@ void printMaze() {
     }
 }
 
-bool exist(int x, int y) {
+bool exist(int x, int y) {  //좌표가 유효한지 확인
     return x >= 0 && x < N&& y >= 0 && y < N;
 }
 
-bool wall(int x, int y) {
+bool wall(int x, int y) { //좌표에 벽이 있는지 확인
     return maze[x][y] == 1;
 }
 
@@ -70,10 +70,9 @@ int main() {
     int startX = rand() % (N / 2) * 2 + 1;
     int startY = rand() % (N / 2) * 2 + 1;
 
-    // DFS로 미로 생성 시작
     generateMaze(startX, startY);
 
-    // 미로 출력
+
     printMaze();
 
     return 0;
