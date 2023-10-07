@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="a_maze_map.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player_move.cpp" />
     <ClCompile Include="Text.cpp" />
