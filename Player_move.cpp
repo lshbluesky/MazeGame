@@ -1,6 +1,7 @@
 ﻿#include "Player_move.hpp"
 #include "Text.hpp"
 #include "a_maze_map.hpp"
+#include "fmod.hpp"
 #include <windows.h>	
 #include <iostream>
 #include <conio.h> // getch 함수를 사용하기 위함
