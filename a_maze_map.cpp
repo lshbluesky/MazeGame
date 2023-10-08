@@ -1,21 +1,32 @@
-﻿#include <iostream>
+﻿#include "a_maze_map.hpp"
+#include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
 
 using namespace std;
 
-const int N = 11; // 미로의 크기 (홀수로 설정)
-vector<vector<int>> maze(N, vector<int>(N, 1)); //(1은 벽, 0은 길)
+// 미로의 크기 (홀수로 설정). 이 N은 헤더파일에 정의되어 있음
+vector<vector<int>> maze(N, vector<int>( N, 1)); //(1은 벽, 0은 길)
 
 int dx[] = { 0, 1, 0, -1 }; // 상하좌우 이동을 위한 배열
 int dy[] = { -1, 0, 1, 0 };
 
-void printMaze() {
+void printMaze(int player_x, int player_y, int end_x, int end_y) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            if (maze[i][j] == 0) cout << "  "; // 길
-            else cout << "■"; // 벽
+            if (j == player_x && i == player_y) {
+                cout << "★"; // 플레이어 아이콘
+            }
+            else if (j == end_x && i == end_y) {
+                cout << "◈"; // 도착점 아이콘
+            }
+            else if (maze[j][i] == 0) {
+                cout << "  "; // 길
+            }
+            else {
+                cout << "■"; // 벽
+            }
         }
         cout << endl;
     }

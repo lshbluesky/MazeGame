@@ -1,7 +1,9 @@
 #ifndef a_maze_map_hpp
 #define a_maze_map_hpp
 
-void printMaze();
+const int N = 11;
+
+void printMaze(int player_x, int player_y, int end_x, int end_y);
 bool exist(int x, int y);
 bool wall(int x, int y);
 void generateMaze(int x, int y);

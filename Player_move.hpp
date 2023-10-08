@@ -9,6 +9,7 @@
 #define RIGHT 77
 using namespace std;
 
+void DrawClear();
 void Playing();
 void cursor(int n); // 커서 깜박임 제거
 void StartFinishPoint(int MAZE_SIZE);
