@@ -1,16 +1,14 @@
-/*
-
-*/
-#include "Player_move.hpp"
+ï»¿#include "Player_move.hpp"
 #include "Text.hpp"
+#include "a_maze_map.hpp"
 #include <windows.h>	
 #include <iostream>
-#include <conio.h> // getch ÇÔ¼ö¸¦ »ç¿ëÇÏ±â À§ÇÔ
+#include <conio.h> // getch í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•¨
 using namespace std;
 
-const int MAZE_SIZE = 5; // »ùÇÃ ¹Ì·Î Å©±â. ½ÇÁ¦ ¹Ì·Î »ý¼º ÄÚµå°¡ ¿Ï¼ºµÇ¾ú´Ù¸é »èÁ¦ÇØµµ µÊ, ¾Æ·¡ ºÎºÐµµ ¸¶Âù°¡Áö
+const int MAZE_SIZE = 5; // ìƒ˜í”Œ ë¯¸ë¡œ í¬ê¸°. ì‹¤ì œ ë¯¸ë¡œ ìƒì„± ì½”ë“œê°€ ì™„ì„±ë˜ì—ˆë‹¤ë©´ ì‚­ì œí•´ë„ ë¨, ì•„ëž˜ ë¶€ë¶„ë„ ë§ˆì°¬ê°€ì§€
 
-char maze[MAZE_SIZE][MAZE_SIZE] = { // ¹Ì·Î°¡ ¾î¶² ±¸Á¶·Î ¸¸µé¾îÁ® ÀÖ´ÂÁö ¸ô¶ó¼­ ¾Æ·¡ ÄÚµå¸¦ ±¸ÇöÇÏ±â À§ÇØ °¡»óÀÇ ¹Ì·Î¸¦ ¸¸µç °Í. '#' ÀÌ ºÎºÐÀÌ º®
+char maze[MAZE_SIZE][MAZE_SIZE] = { // ë¯¸ë¡œê°€ ì–´ë–¤ êµ¬ì¡°ë¡œ ë§Œë“¤ì–´ì ¸ ìžˆëŠ”ì§€ ëª°ë¼ì„œ ì•„ëž˜ ì½”ë“œë¥¼ êµ¬í˜„í•˜ê¸° ìœ„í•´ ê°€ìƒì˜ ë¯¸ë¡œë¥¼ ë§Œë“  ê²ƒ. '#' ì´ ë¶€ë¶„ì´ ë²½
 	{' ', ' ', ' ', '#', ' '},
 	{'#', '#', ' ', '#', ' '},
 	{' ', ' ', ' ', '#', ' '},
@@ -18,37 +16,37 @@ char maze[MAZE_SIZE][MAZE_SIZE] = { // ¹Ì·Î°¡ ¾î¶² ±¸Á¶·Î ¸¸µé¾îÁ® ÀÖ´ÂÁö ¸ô¶ó¼­
 	{' ', ' ', ' ', ' ', 'E'}
 };
 
-class Move { // ÀÌµ¿ ÇÔ¼ö¸¦ ´ã´çÇÏ´Â ±âº» Å¬·¡½º
+class Move { // ì´ë™ í•¨ìˆ˜ë¥¼ ë‹´ë‹¹í•˜ëŠ” ê¸°ë³¸ í´ëž˜ìŠ¤
 public:
 	virtual bool isMoveBlocked(int x, int y) {
-		if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) { // ÀÌµ¿ÇÒ·Á´Â ¹æÇâÀÌ ¹Ì·ÎÀÇ Å©±â¿¡ ¹þ¾î³ªÁö ¾Ê´ÂÁö È®ÀÎ
-			return true; // º®¿¡ ¸·ÇûÀ» ¶§ °æ°íÀ½ ¼Ò¸®·Î Àß¸øµÈ Å°º¸µå ÀÔ·ÂÀÌ¶õ°É ¾Ë¸²
+		if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) { // ì´ë™í• ë ¤ëŠ” ë°©í–¥ì´ ë¯¸ë¡œì˜ í¬ê¸°ì— ë²—ì–´ë‚˜ì§€ ì•ŠëŠ”ì§€ í™•ì¸
+			return true; // ë²½ì— ë§‰í˜”ì„ ë•Œ ê²½ê³ ìŒ ì†Œë¦¬ë¡œ ìž˜ëª»ëœ í‚¤ë³´ë“œ ìž…ë ¥ì´ëž€ê±¸ ì•Œë¦¼
 		}
-		if (maze[x][y] == '¡á') { // ÀÌµ¿ÇÒ·Á´Â ¹æÇâ¿¡ º®ÀÌ ÀÖ´ÂÁö È®ÀÎ
+		if (maze[x][y] == 'â– ') { // ì´ë™í• ë ¤ëŠ” ë°©í–¥ì— ë²½ì´ ìžˆëŠ”ì§€ í™•ì¸
 			return true;
 		}
-		return false; // ±âº» ÀüÁ¦·Î º®ÀÌ ¾ø´Ù°í °¡Á¤ÇÔ
+		return false; // ê¸°ë³¸ ì „ì œë¡œ ë²½ì´ ì—†ë‹¤ê³  ê°€ì •í•¨
 	}
 
-	virtual void move(int& x, int& y) = 0; // ÇÃ·¹ÀÌ¾î ÀÌµ¿ ÇÔ¼ö. ¼ø¼ö °¡»ó ÇÔ¼ö·Î Á¤ÀÇÇß°í, ÆÄ»ý Å¬·¡½º¿¡¼­ ¹«Á¶°Ç µ¿ÀÛÀ» Á¤ÀÇÇØ¾ß ÇÔ
+	virtual void move(int& x, int& y) = 0; // í”Œë ˆì´ì–´ ì´ë™ í•¨ìˆ˜. ìˆœìˆ˜ ê°€ìƒ í•¨ìˆ˜ë¡œ ì •ì˜í–ˆê³ , íŒŒìƒ í´ëž˜ìŠ¤ì—ì„œ ë¬´ì¡°ê±´ ë™ìž‘ì„ ì •ì˜í•´ì•¼ í•¨
 };
 
-class MoveUp :public Move { // »ó¼Ó ¹ÞÀº Up Å¬·¡½º. À§·Î ¿òÁ÷ÀÌ´Â ±â´É ±¸Çö
+class MoveUp :public Move { // ìƒì† ë°›ì€ Up í´ëž˜ìŠ¤. ìœ„ë¡œ ì›€ì§ì´ëŠ” ê¸°ëŠ¥ êµ¬í˜„
 public:
-	bool isMoveBlocked(int x, int y) override { // isMoveBlocked ÇÔ¼ö ¿À¹ö¶óÀÌµù 
-		return Move::isMoveBlocked(x, y - 1); // À§·Î °¡´Ï±ñ yÁÂÇ¥¸¦ -1 ÇÔ. Áï ¿òÁ÷ÀÏ À§Ä¡ÀÇ ÁÂÇ¥°ªÀ» ³ÖÀ½
+	bool isMoveBlocked(int x, int y) override { // isMoveBlocked í•¨ìˆ˜ ì˜¤ë²„ë¼ì´ë”© 
+		return Move::isMoveBlocked(x, y - 1); // ìœ„ë¡œ ê°€ë‹ˆê¹ yì¢Œí‘œë¥¼ -1 í•¨. ì¦‰ ì›€ì§ì¼ ìœ„ì¹˜ì˜ ì¢Œí‘œê°’ì„ ë„£ìŒ
 	}
 	void move(int& x, int& y) override {
-		if (!isMoveBlocked(x, y)) { // ¹Ì·Î Å©±â¿¡ ¹þ¾î³ªÁö ¾Ê°Å³ª ÁøÇà ¹æÇâ¿¡ º®ÀÌ ¾ø´Ù¸é À§·Î ÀÌµ¿
-			y = y - 1; // À§·Î °¡´Ï±ñ ÇöÀç À§Ä¡ÀÇ yÁÂÇ¥°ªÀ» -1
+		if (!isMoveBlocked(x, y)) { // ë¯¸ë¡œ í¬ê¸°ì— ë²—ì–´ë‚˜ì§€ ì•Šê±°ë‚˜ ì§„í–‰ ë°©í–¥ì— ë²½ì´ ì—†ë‹¤ë©´ ìœ„ë¡œ ì´ë™
+			y = y - 1; // ìœ„ë¡œ ê°€ë‹ˆê¹ í˜„ìž¬ ìœ„ì¹˜ì˜ yì¢Œí‘œê°’ì„ -1
 		}
 	}
 };
 
-class MoveDown :public Move { // »ó¼Ó ¹ÞÀº Down Å¬·¡½º. ¾Æ·¡·Î ¿òÁ÷ÀÌ´Â ±â´É ±¸Çö
+class MoveDown :public Move { // ìƒì† ë°›ì€ Down í´ëž˜ìŠ¤. ì•„ëž˜ë¡œ ì›€ì§ì´ëŠ” ê¸°ëŠ¥ êµ¬í˜„
 public:
 	bool isMoveBlocked(int x, int y) override {
-		return Move::isMoveBlocked(x, y + 1); // ¾Æ·¡·Î °¡´Ï±ñ yÁÂÇ¥¸¦ +1 ÇÔ
+		return Move::isMoveBlocked(x, y + 1); // ì•„ëž˜ë¡œ ê°€ë‹ˆê¹ yì¢Œí‘œë¥¼ +1 í•¨
 	}
 	void move(int& x, int& y) override {
 		if (!isMoveBlocked(x, y)) {
@@ -57,10 +55,10 @@ public:
 	}
 };
 
-class MoveLeft :public Move { // »ó¼Ó ¹ÞÀº Up Å¬·¡½º. ¿ÞÂÊÀ¸·Î ¿òÁ÷ÀÌ´Â ±â´É ±¸Çö
+class MoveLeft :public Move { // ìƒì† ë°›ì€ Up í´ëž˜ìŠ¤. ì™¼ìª½ìœ¼ë¡œ ì›€ì§ì´ëŠ” ê¸°ëŠ¥ êµ¬í˜„
 public:
 	bool isMoveBlocked(int x, int y) override {
-		return Move::isMoveBlocked(x - 2, y); // ¿ÞÂÊÀ¸·Î °¡´Ï±ñ xÁÂÇ¥¸¦ -2 ÇÔ
+		return Move::isMoveBlocked(x - 2, y); // ì™¼ìª½ìœ¼ë¡œ ê°€ë‹ˆê¹ xì¢Œí‘œë¥¼ -2 í•¨
 	}
 	void move(int& x, int& y) override {
 		if (!isMoveBlocked(x, y)) {
@@ -69,10 +67,10 @@ public:
 	}
 };
 
-class MoveRight :public Move { // »ó¼Ó ¹ÞÀº Up Å¬·¡½º. ¿À¸¥ÂÊÀ¸·Î ¿òÁ÷ÀÌ´Â ±â´É ±¸Çö
+class MoveRight :public Move { // ìƒì† ë°›ì€ Up í´ëž˜ìŠ¤. ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì›€ì§ì´ëŠ” ê¸°ëŠ¥ êµ¬í˜„
 public:
 	bool isMoveBlocked(int x, int y) override {
-		return Move::isMoveBlocked(x + 2, y); // ¿À¸¥ÂÊÀ¸·Î °¡´Ï±ñ xÁÂÇ¥¸¦ +2 ÇÔ
+		return Move::isMoveBlocked(x + 2, y); // ì˜¤ë¥¸ìª½ìœ¼ë¡œ ê°€ë‹ˆê¹ xì¢Œí‘œë¥¼ +2 í•¨
 	}
 	void move(int& x, int& y) override {
 		if (!isMoveBlocked(x, y)) {
@@ -81,26 +79,26 @@ public:
 	}
 };
 
-class Player { // ¿©±â¼­ Å°º¸µå ÀÔ·Â°ªÀ» ¹Þ°í, ÀÌµ¿ ÇÔ¼öµéÀ» È£Ãâ ÇÒ ¿¹Á¤. 
+class Player { // ì—¬ê¸°ì„œ í‚¤ë³´ë“œ ìž…ë ¥ê°’ì„ ë°›ê³ , ì´ë™ í•¨ìˆ˜ë“¤ì„ í˜¸ì¶œ í•  ì˜ˆì •. 
 private:
-	int x, y;// ÇÃ·¹ÀÌ¾î ÁÂÇ¥
+	int x, y;// í”Œë ˆì´ì–´ ì¢Œí‘œ
 	int e_x, e_y;
-	Move* currentMove; // ºÎ¸ð Å¬·¡½ºÀÇ Æ÷ÀÎÅÍ·Î ÀÚ½Ä Å¬·¡½ºÀÇ °´Ã¼¸¦ µ¿Àû ÇÒ´ç ÇÔ. ´ÙÇü¼ºÀ» µå·¯³¿
+	Move* currentMove; // ë¶€ëª¨ í´ëž˜ìŠ¤ì˜ í¬ì¸í„°ë¡œ ìžì‹ í´ëž˜ìŠ¤ì˜ ê°ì²´ë¥¼ ë™ì  í• ë‹¹ í•¨. ë‹¤í˜•ì„±ì„ ë“œëŸ¬ëƒ„
 
 public:
-	Player(int start_x, int start_y, int end_x, int end_y) : x(start_x), y(start_y), e_x(end_x), e_y(end_y), currentMove(nullptr) {} // »ý¼ºÀÚ Á¤ÀÇ. ÁÂÇ¥°ª 0À¸·Î ÃÊ±âÈ­(ÀÏ¹ÝÀûÀÎ ½ÃÀÛÀ§Ä¡), Æ÷ÀÎÅÍ °ª null·Î ÁöÁ¤
-	~Player() {                                    // ¼Ò¸êÀÚ Á¤ÀÇ
-		delete	currentMove;                       // ¸Å ÆÇÀÌ ³¡³ª¸é ÇÃ·¹ÀÌ¾î ÀÌµ¿À» ´ã´çÇÑ µ¿Àû ÇÒ´çµÈ ¸Þ¸ð¸®µéÀ» »èÁ¦ÇÔ
+	Player(int start_x, int start_y, int end_x, int end_y) : x(start_x), y(start_y), e_x(end_x), e_y(end_y), currentMove(nullptr) {} // ìƒì„±ìž ì •ì˜. ì¢Œí‘œê°’ 0ìœ¼ë¡œ ì´ˆê¸°í™”(ì¼ë°˜ì ì¸ ì‹œìž‘ìœ„ì¹˜), í¬ì¸í„° ê°’ nullë¡œ ì§€ì •
+	~Player() {                                    // ì†Œë©¸ìž ì •ì˜
+		delete	currentMove;                       // ë§¤ íŒì´ ëë‚˜ë©´ í”Œë ˆì´ì–´ ì´ë™ì„ ë‹´ë‹¹í•œ ë™ì  í• ë‹¹ëœ ë©”ëª¨ë¦¬ë“¤ì„ ì‚­ì œí•¨
 	}
 
 	void handleInput() {
-		char direction; // Å°º¸µå °ª ÀÔ·Â ¹ÞÀ» º¯¼ö
-		direction = _getch(); // Å°º¸µå °ª ÀÔ·Â ¹ÞÀ½
+		char direction; // í‚¤ë³´ë“œ ê°’ ìž…ë ¥ ë°›ì„ ë³€ìˆ˜
+		direction = _getch(); // í‚¤ë³´ë“œ ê°’ ìž…ë ¥ ë°›ìŒ
 
 		switch (direction) { 
 		case'w':
 		case'W':
-			currentMove = new MoveUp(); // Æ÷ÀÎÅÍ º¯¼ö¿¡ °´Ã¼¸¦ µ¿Àû ÇÒ´ç
+			currentMove = new MoveUp(); // í¬ì¸í„° ë³€ìˆ˜ì— ê°ì²´ë¥¼ ë™ì  í• ë‹¹
 			break;
 		case's':
 		case'S':
@@ -117,46 +115,47 @@ public:
 		}
 
 		if (currentMove != nullptr) {
-			currentMove->move(x, y); // move ÇÔ¼ö È£Ãâ. ´ÙÇü¼º »ç¿ë
+			currentMove->move(x, y); // move í•¨ìˆ˜ í˜¸ì¶œ. ë‹¤í˜•ì„± ì‚¬ìš©
 		}
 	}
-	//void GameFinish() { // Å»Ãâ ¼º°ø
+	//void GameFinish() { // íƒˆì¶œ ì„±ê³µ
 	//	if (x = e_x && y = e_y) { 
-	//		// ¹Ì·Î Å»Ãâ ¼º°øÀ» Ç¥ÇöÇÏ´Â GAME OVER ³ª CLEAR °°Àº ¹®±¸¸¦ ÀÌ¿ëÇÑ È­¸éÀÌ Ãâ·Â + ¼º°øÀ» ¾Ë¸®´Â È¿°úÀ½µµ µé¾î°¡¸é ÁÁÀ» °Å °°À½
-	//		// ´Ù¸¸ ¼º°ø È­¸éÀÌ ÇöÀç ±¸ÇöµÇ¾î ÀÖÁö ¾Ê°í È¿°úÀ½µµ ¾ø´Â »óÅÂ¶ó ¾î¶»°Ô ÄÚµå¸¦ ¸¸µé¾î¾ß ÇÒ Áö ¸ô¶ó ºñ¿ö µÒ
-	//		// È¤½Ã ÀÌ ºÎºÐ ÄÚµå ¿Ï¼º ÇÏ½Ç ¼ö ÀÖ´Ù¸é ºÎÅ¹µå¸³´Ï´Ù...
+	//		// ë¯¸ë¡œ íƒˆì¶œ ì„±ê³µì„ í‘œí˜„í•˜ëŠ” GAME OVER ë‚˜ CLEAR ê°™ì€ ë¬¸êµ¬ë¥¼ ì´ìš©í•œ í™”ë©´ì´ ì¶œë ¥ + ì„±ê³µì„ ì•Œë¦¬ëŠ” íš¨ê³¼ìŒë„ ë“¤ì–´ê°€ë©´ ì¢‹ì„ ê±° ê°™ìŒ
+	//		// ë‹¤ë§Œ ì„±ê³µ í™”ë©´ì´ í˜„ìž¬ êµ¬í˜„ë˜ì–´ ìžˆì§€ ì•Šê³  íš¨ê³¼ìŒë„ ì—†ëŠ” ìƒíƒœë¼ ì–´ë–»ê²Œ ì½”ë“œë¥¼ ë§Œë“¤ì–´ì•¼ í•  ì§€ ëª°ë¼ ë¹„ì›Œ ë‘ 
+	//		// í˜¹ì‹œ ì´ ë¶€ë¶„ ì½”ë“œ ì™„ì„± í•˜ì‹¤ ìˆ˜ ìžˆë‹¤ë©´ ë¶€íƒë“œë¦½ë‹ˆë‹¤...
 	//	}
 	//}
-	void print() {					// È­¸é °»½Å
-		gotoxy(x, y, "\u2605");// ÇÃ·¹ÀÌ¾îÀÇ À§Ä¡´Â ¡Ú·Î Ç¥±â
-		gotoxy(e_x, e_y, "\u25c8");// µµÂøÁ¡ À§Ä¡´Â ¢Â·Î Ç¥±â
+	void print() {					// í™”ë©´ ê°±ì‹ 
+		gotoxy(x, y, "\u2605");// í”Œë ˆì´ì–´ì˜ ìœ„ì¹˜ëŠ” â˜…ë¡œ í‘œê¸°
+		gotoxy(e_x, e_y, "\u25c8");// ë„ì°©ì  ìœ„ì¹˜ëŠ” â—ˆë¡œ í‘œê¸°
 	}
 
-	int getX() const { return x; } // ¿ÜºÎ¿¡¼­ x°ªÀ» °¡Á®°¥ ¶§. x °ªÀ» °ÇµéÀÌÁö ¾Êµµ·Ï const¸¦ »ç¿ë
+	int getX() const { return x; } // ì™¸ë¶€ì—ì„œ xê°’ì„ ê°€ì ¸ê°ˆ ë•Œ. x ê°’ì„ ê±´ë“¤ì´ì§€ ì•Šë„ë¡ constë¥¼ ì‚¬ìš©
 	int getY() const { return y; }
 };
 
-int start_x, start_y; // ½ÃÀÛ À§Ä¡ º¯¼ö ÀúÀå¿ë
-int end_x, end_y; // µµÂøÁ¡ À§Ä¡ º¯¼ö ÀúÀå¿ë 
+int start_x, start_y; // ì‹œìž‘ ìœ„ì¹˜ ë³€ìˆ˜ ì €ìž¥ìš©
+int end_x, end_y; // ë„ì°©ì  ìœ„ì¹˜ ë³€ìˆ˜ ì €ìž¥ìš© 
 
-// ¾Æ·¡ ÇÔ¼ö ³»¿ëÀº ±×³É main¿¡ º¹ºÙÇÏ´Â ÆíÀÌ ÆíÇÒµí, ÃÖ¼ÒÇÑ Randomstart¶û Player´Â ÇØ¾ßÇÔ
+// ì•„ëž˜ í•¨ìˆ˜ ë‚´ìš©ì€ ê·¸ëƒ¥ mainì— ë³µë¶™í•˜ëŠ” íŽ¸ì´ íŽ¸í• ë“¯, ìµœì†Œí•œ Randomstartëž‘ PlayerëŠ” í•´ì•¼í•¨
 void Playing() {
-
-	Player player(start_x, start_y, end_x, end_y);		// °´Ã¼ »ý¼º, RandomStart ³ªÁß ¸ÕÀú »ó°ü ¾øÀ»µí?
-
-	while (true)			// ÀÔ·ÂÀ» ¹ÞÀ¸¸é ¿òÁ÷ÀÌµµ·Ï
+	StartMaze(); // ë¯¸ë¡œë¥¼ ê·¸ë¦¬ê¸° ìœ„í•œ ì¤€ë¹„ ë° ë¯¸ë¡œ ìƒì„± í•¨ìˆ˜ í˜¸ì¶œ
+	Player player(start_x, start_y, end_x, end_y);		// ê°ì²´ ìƒì„±, RandomStart ë‚˜ì¤‘ ë¨¼ì € ìƒê´€ ì—†ì„ë“¯?
+	
+	while (true)			// ìž…ë ¥ì„ ë°›ìœ¼ë©´ ì›€ì§ì´ë„ë¡
 	{
+		printMaze(); // ë¯¸ë¡œë¥¼ ê·¸ë¦¬ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
 		player.print();
-		cursor(0);			// 0 = ±ôºýÀÓ Á¦°Å / 1 = ±ôºýÀÓ »ý¼º
+		cursor(0);			// 0 = ê¹œë¹¡ìž„ ì œê±° / 1 = ê¹œë¹¡ìž„ ìƒì„±
 
-		player.handleInput(); // Å°º¸µå ÀÔ·Â ¹Þ´Â ÇÔ¼ö È£Ãâ
+		player.handleInput(); // í‚¤ë³´ë“œ ìž…ë ¥ ë°›ëŠ” í•¨ìˆ˜ í˜¸ì¶œ
 
-		Sleep(5);			// 5ms °£°ÝÀ¸·Î È­¸é °»½Å
-		system("cls");		// È­¸é °»½Å
+		Sleep(5);			// 5ms ê°„ê²©ìœ¼ë¡œ í™”ë©´ ê°±ì‹ 
+		system("cls");		// í™”ë©´ ê°±ì‹ 
 	}
 }
 
-void cursor(int n) { // Ä¿¼­ ±ôºýÀÓ Á¦°Å ¿ëµµ
+void cursor(int n) { // ì»¤ì„œ ê¹œë¹¡ìž„ ì œê±° ìš©ë„
 	HANDLE hConsole;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
 
@@ -167,51 +166,46 @@ void cursor(int n) { // Ä¿¼­ ±ôºýÀÓ Á¦°Å ¿ëµµ
 	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
 }
 
-
-/* ¹Ø¿¡ ³ª¿Ã StartFinishPoint ÇÔ¼ö¸¦ ¼³°èÇÑ °úÁ¤ ¹× ³í¸® ¼³¸í
-* Á© ¹Ù±ùÀº º®À¸·Î µÑ·¯Á® ÀÖ´Â »óÅÂ¿¡¼­, ¹Ì·Î ³»ºÎÀÇ °¢ ²ÀÁþÁ¡ 4±ºµ¥´Â ¹«Á¶°Ç º®ÀÌ ¾Æ´Ñ ±æ·Î »ý¼ºµÉ°Å¶ó °¡Á¤ÇÏ¿¡ ¸¸µé¾îÁü(È®½ÅÀº ¸øÇÏÁö¸¸ ¸î ¹øÀÇ Å×½ºÆ® °á°ú ±×·¸°Ô »ý¼ºµÊ)
-* ±×·¡¼­ ±× 4°÷ÀÇ ²ÀÁþÁ¡ Áß ·£´ýÀ¸·Î ÇÑ °÷À» Ãâ¹ßÁ¡ÀÌ¶ó ÁöÁ¤ÇÏ¸é, ÀÚµ¿À¸·Î ±× ´ë°¢¼± ¹Ý´ëÆí¿¡ ÀÖ´Â ²ÀÁþÁ¡ÀÌ µµÂøÁ¡ÀÌ µÇµµ·Ï ¸¸µë
-* ±×·¯¸é Ãâ¹ßÁ¡°ú µµÂøÁ¡ÀÌ ³Ê¹« °¡±î¿ö °ÔÀÓÀÌ ½Ì°Å¿öÁú ¿ì·Á¸¦ ÇØ°áÇÒ ¼ö ÀÖÀ»°Å¶ó »ý°¢µÇ¾î¼­ °í¹Î ³¡¿¡ ÀÌ ¹æ½ÄÀ» »ç¿ëÇÏ±â·Î °áÁ¤
+/* ë°‘ì— ë‚˜ì˜¬ StartFinishPoint í•¨ìˆ˜ë¥¼ ì„¤ê³„í•œ ê³¼ì • ë° ë…¼ë¦¬ ì„¤ëª…
+* ì ¤ ë°”ê¹¥ì€ ë²½ìœ¼ë¡œ ë‘˜ëŸ¬ì ¸ ìžˆëŠ” ìƒíƒœì—ì„œ, ë¯¸ë¡œ ë‚´ë¶€ì˜ ê° ê¼­ì§“ì  4êµ°ë°ëŠ” ë¬´ì¡°ê±´ ë²½ì´ ì•„ë‹Œ ê¸¸ë¡œ ìƒì„±ë ê±°ë¼ ê°€ì •í•˜ì— ë§Œë“¤ì–´ì§(í™•ì‹ ì€ ëª»í•˜ì§€ë§Œ ëª‡ ë²ˆì˜ í…ŒìŠ¤íŠ¸ ê²°ê³¼ ê·¸ë ‡ê²Œ ìƒì„±ë¨)
+* ê·¸ëž˜ì„œ ê·¸ 4ê³³ì˜ ê¼­ì§“ì  ì¤‘ ëžœë¤ìœ¼ë¡œ í•œ ê³³ì„ ì¶œë°œì ì´ë¼ ì§€ì •í•˜ë©´, ìžë™ìœ¼ë¡œ ê·¸ ëŒ€ê°ì„  ë°˜ëŒ€íŽ¸ì— ìžˆëŠ” ê¼­ì§“ì ì´ ë„ì°©ì ì´ ë˜ë„ë¡ ë§Œë“¬
+* ê·¸ëŸ¬ë©´ ì¶œë°œì ê³¼ ë„ì°©ì ì´ ë„ˆë¬´ ê°€ê¹Œì›Œ ê²Œìž„ì´ ì‹±ê±°ì›Œì§ˆ ìš°ë ¤ë¥¼ í•´ê²°í•  ìˆ˜ ìžˆì„ê±°ë¼ ìƒê°ë˜ì–´ì„œ ê³ ë¯¼ ëì— ì´ ë°©ì‹ì„ ì‚¬ìš©í•˜ê¸°ë¡œ ê²°ì •
 *							!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *							!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-*				ÀúÈñ°¡ ¸¹Àº ½Ã°£ µ¿¾È °í¹ÎÇÏ°í ÇÐ½ÀÇÏ¸ç Å×½ºÆ®¸¦ µ¹¸° °á°ú, 4°÷ÀÇ ²ÀÁþÁ¡ÀÌ ¸·Èù ¹Ì·Î°¡ »ý¼ºµÇ´Â °æ¿ì´Â ¹ö±×ÀÌ°Å³ª ¿À·ùÀÏ °ÍÀÌ¶ó ÆÇ´ÜÇÏ¿´½À´Ï´Ù
-*							È¤½Ã³ª ÀúÈñÀÇ ÆÇ´ÜÀÌ Æ²¸° °Å¶ó¸é ÀÌ¿¡ ´ëÇÑ ÇØ°á ¹æ¾ÈÀ» ´Ù °°ÀÌ »ý°¢ÇØºÁ¾ß µÉ °Å °°¾Æ¿ä
+*				ì €í¬ê°€ ë§Žì€ ì‹œê°„ ë™ì•ˆ ê³ ë¯¼í•˜ê³  í•™ìŠµí•˜ë©° í…ŒìŠ¤íŠ¸ë¥¼ ëŒë¦° ê²°ê³¼, 4ê³³ì˜ ê¼­ì§“ì ì´ ë§‰ížŒ ë¯¸ë¡œê°€ ìƒì„±ë˜ëŠ” ê²½ìš°ëŠ” ë²„ê·¸ì´ê±°ë‚˜ ì˜¤ë¥˜ì¼ ê²ƒì´ë¼ íŒë‹¨í•˜ì˜€ìŠµë‹ˆë‹¤
+*							í˜¹ì‹œë‚˜ ì €í¬ì˜ íŒë‹¨ì´ í‹€ë¦° ê±°ë¼ë©´ ì´ì— ëŒ€í•œ í•´ê²° ë°©ì•ˆì„ ë‹¤ ê°™ì´ ìƒê°í•´ë´ì•¼ ë  ê±° ê°™ì•„ìš”
 *							!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *							!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* È¤½Ã³ª ÀÌ ºÎºÐ¿¡ ´ëÇØ ±Ã±ÝÇÏ°Å³ª ÀÌÇØ°¡ °¡Áö ¾Ê´Â ºÎºÐÀÌ ÀÖ´Ù¸é Áú¹® ºÎÅ¹µå¸³´Ï´Ù.
+* í˜¹ì‹œë‚˜ ì´ ë¶€ë¶„ì— ëŒ€í•´ ê¶ê¸ˆí•˜ê±°ë‚˜ ì´í•´ê°€ ê°€ì§€ ì•ŠëŠ” ë¶€ë¶„ì´ ìžˆë‹¤ë©´ ì§ˆë¬¸ ë¶€íƒë“œë¦½ë‹ˆë‹¤.
 */
+void StartFinishPoint(int MAZE_SIZE) { // ì¶œë°œì ê³¼ ë„ì°©ì ì„ ìƒì„±í•˜ëŠ” í•¨ìˆ˜
+	srand(static_cast<unsigned>(time(0))); // ë‚œìˆ˜ ìƒì„±ê¸° ì´ˆê¸°í™”
 
-
-void StartFinishPoint(int MAZE_SIZE) { // Ãâ¹ßÁ¡°ú µµÂøÁ¡À» »ý¼ºÇÏ´Â ÇÔ¼ö
-	srand(static_cast<unsigned>(time(0))); // ³­¼ö »ý¼º±â ÃÊ±âÈ­
-
-	// Ãâ¹ßÁ¡°ú µµÂøÁ¡ ¼³Á¤
-	int n = MAZE_SIZE - 2; // ¹Ì·Î»çÀÌÁî°¡ 10ÀÌ¶ó °¡Á¤ÇÏ¸é ¹Ù±ù¿¡ Á¸ÀçÇÏ´Â º®Àº 0°ú 9·Î ÀÌ·ç¾îÁ® ÀÖÀ»Å×´Ï, ¿òÁ÷ÀÏ ¼ö ÀÖ´Â ¹Ì·Î ³»ºÎÀÇ Á© ³¡Àº 1°ú 8ÀÌ µÇ¹Ç·Î -2¸¦ ÇÔ
+	// ì¶œë°œì ê³¼ ë„ì°©ì  ì„¤ì •
+	int n = MAZE_SIZE - 2; // ë¯¸ë¡œì‚¬ì´ì¦ˆê°€ 10ì´ë¼ ê°€ì •í•˜ë©´ ë°”ê¹¥ì— ì¡´ìž¬í•˜ëŠ” ë²½ì€ 0ê³¼ 9ë¡œ ì´ë£¨ì–´ì ¸ ìžˆì„í…Œë‹ˆ, ì›€ì§ì¼ ìˆ˜ ìžˆëŠ” ë¯¸ë¡œ ë‚´ë¶€ì˜ ì ¤ ëì€ 1ê³¼ 8ì´ ë˜ë¯€ë¡œ -2ë¥¼ í•¨
 	int startX, startY, endX, endY;
 
-	// Ãâ¹ßÁ¡ ¼³Á¤
-	int randomStart = rand() % 4; // rand ÇÔ¼ö°¡ ¹ÝÈ¯ÇÏ´Â 0ºÎÅÍ RAND_MAXÀÇ °ª Áß 4·Î ³ª´« ³ª¸ÓÁö, Áï 0, 1, 2, 3¸¸ ³ª¿À°Ô ²û ÇÏ´Â ÇÔ¼ö
+	// ì¶œë°œì  ì„¤ì •
+	int randomStart = rand() % 4; // rand í•¨ìˆ˜ê°€ ë°˜í™˜í•˜ëŠ” 0ë¶€í„° RAND_MAXì˜ ê°’ ì¤‘ 4ë¡œ ë‚˜ëˆˆ ë‚˜ë¨¸ì§€, ì¦‰ 0, 1, 2, 3ë§Œ ë‚˜ì˜¤ê²Œ ë” í•˜ëŠ” í•¨ìˆ˜
 	switch (randomStart) {
-	case 0: // (1, 1)À» Ãâ¹ßÁ¡À¸·Î ¼³Á¤
+	case 0: // (1, 1)ì„ ì¶œë°œì ìœ¼ë¡œ ì„¤ì •
 		startX = 1;
 		startY = 1;
 		break;
-	case 1: // (1, n)À» Ãâ¹ßÁ¡À¸·Î ¼³Á¤
+	case 1: // (1, n)ì„ ì¶œë°œì ìœ¼ë¡œ ì„¤ì •
 		startX = 1;
 		startY = n;
 		break;
-	case 2: // (n, 1)À» Ãâ¹ßÁ¡À¸·Î ¼³Á¤
+	case 2: // (n, 1)ì„ ì¶œë°œì ìœ¼ë¡œ ì„¤ì •
 		startX = n;
 		startY = 1;
 		break;
-	case 3: // (n, n)À» Ãâ¹ßÁ¡À¸·Î ¼³Á¤
+	case 3: // (n, n)ì„ ì¶œë°œì ìœ¼ë¡œ ì„¤ì •
 		startX = n;
 		startY = n;
 		break;
 
 	}
-	endX = MAZE_SIZE - 1 - startX; // ÀÌ ¼ö½ÄÀ» °è»êÇÏ¸é Ãâ¹ßÁ¡ÀÇ ´ë°¢¼± ¹Ý´ë¿¡ ÀÖ´Â ²ÀÁþÁ¡ÀÇ ÁÂÇ¥°¡ µµÂøÁ¡À¸·Î ¼³Á¤ µÊ
+	endX = MAZE_SIZE - 1 - startX; // ì´ ìˆ˜ì‹ì„ ê³„ì‚°í•˜ë©´ ì¶œë°œì ì˜ ëŒ€ê°ì„  ë°˜ëŒ€ì— ìžˆëŠ” ê¼­ì§“ì ì˜ ì¢Œí‘œê°€ ë„ì°©ì ìœ¼ë¡œ ì„¤ì • ë¨
 	endY = MAZE_SIZE - 1 - startY;
 }
-
-

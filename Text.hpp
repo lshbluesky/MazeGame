@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿#ifndef Text_hpp
+#define Text_hpp
+
+#include <iostream>
 #include <string>
 using namespace std;
 
@@ -13,3 +16,5 @@ void Speak(const char speaking[]);
 void Speak(const char speaking[], int C);
 void TextColor(int color_num);
 int str_num(const char* str);
+
+#endif

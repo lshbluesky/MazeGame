@@ -135,6 +135,7 @@
     <ClCompile Include="Text.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="a_maze_map.hpp" />
     <ClInclude Include="Player_move.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Text.hpp" />

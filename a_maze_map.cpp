@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
@@ -14,8 +14,8 @@ int dy[] = { -1, 0, 1, 0 };
 void printMaze() {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            if (maze[i][j] == 0) cout << " "; // 길
-            else cout << "#"; // 벽
+            if (maze[i][j] == 0) cout << "  "; // 길
+            else cout << "■"; // 벽
         }
         cout << endl;
     }
@@ -51,7 +51,7 @@ void generateMaze(int x, int y) {
     }
 }
 
-int main() {
+void StartMaze() {
     srand(static_cast<unsigned>(time(nullptr)));
 
     // 초기 미로 생성 (테두리와 내부를 모두 벽으로 설정)
@@ -71,9 +71,5 @@ int main() {
     int startY = rand() % (N / 2) * 2 + 1;
 
     generateMaze(startX, startY);
-
-
-    printMaze();
-
-    return 0;
+    //printMaze(); // 미로를 그리는 함수는 Player_move.cpp 의 Playing 함수에서 while 문 안에서 따로 계속 수행하기.
 }
