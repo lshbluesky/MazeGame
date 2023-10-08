@@ -206,6 +206,7 @@ int DrawStageMenu() { // 플레이어 연령 별 스테이지를 선택하는 �
 	unsigned int menu; // 스테이지 메뉴 번호를 입력받아서 저장할 menu 변수를 선언.
 	gotoxy(6, 21, "▦ 플레이하려는 스테이지 번호 입력 : ", DEEP_OC);
 	cin >> menu; // 스테이지 메뉴 번호를 입력받아서 menu 변수에 저장.
+	TextColor(DEEP_WHITE);
 	Fmod->playSound(Select, 0, false, &channel2); // 선택 효과음 재생
 	Fmod->update();
 	return menu; // 입력받은 스테이지 메뉴 번호를 반환. (StageMenu 함수의 switch 문에서 이의 반환값이 사용됨.)
@@ -222,6 +223,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 		{
 		case 1: // 유아용 스테이지의 Level 1을 선택한 경우
 			system("cls");
+			Playing();
 			break;
 		case 2: // 유아용 스테이지의 Level 2를 선택한 경우
 			system("cls");
