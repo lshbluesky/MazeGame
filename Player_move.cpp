@@ -1,137 +1,183 @@
-﻿#include <random>
-#include <conio.h>			// _getch() 함수에서 필요
-#include <windows.h>		// COORD 등을 사용하는 isWall() 함수에서 필요
+﻿#include <windows.h>
+#include <iostream>
+#include <conio.h> // _getch 함수를 사용하기 위함
+#include <vector>
 #include "Text.hpp"
+#include "fmod.hpp"
 #include "Player_move.hpp"
+#include "a_maze_map.hpp"
 using namespace std;
 
-class Move {
-private:
-	int& x;
-	int& y;
-	int prev_x;
-	int prev_y;
+extern const int N; // a_maze_map.cpp 에서 참조한 미로 크기 
+extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 미로 선언
+const int MAZE_SIZE = N; // 미로 크기
 
+class Move { // 이동 함수를 담당하는 기본 클래스
 public:
-	Move(int& x, int& y) : x(x), y(y), prev_x(x), prev_y(y) {}
+	virtual bool isMoveBlocked(int x, int y) {
 
-	void MoveUp() {
-		prev_x = x;
-		prev_y = y;
-		y--;
-		if (isWall(x, y)) {
-			x = prev_x;
-			y = prev_y;
+		if (x < 0 || x >= MAZE_SIZE || y < 0 || y >= MAZE_SIZE) { // 이동할려는 방향이 미로의 크기에 벗어나지 않는지 확인
+			return true; // 벽에 막혔을 때 경고음 소리로 잘못된 키보드 입력이란걸 알림
 		}
+
+		if (maze[x][y] == 1) { // 이동할려는 방향에 벽이 있는지 확인
+			return true;
+		}
+		return false; // 기본 전제로 벽이 없다고 가정함
 	}
 
-	void MoveDown() {
-		prev_x = x;
-		prev_y = y;
-		y++;
-		if (isWall(x, y)) {
-			x = prev_x;
-			y = prev_y;
-		}
-	}
+	virtual void move(int& x, int& y) = 0; // 플레이어 이동 함수. 순수 가상 함수로 정의했고, 파생 클래스에서 무조건 동작을 정의해야 함
+};
 
-	void MoveLeft() {
-		prev_x = x;
-		prev_y = y;
-		x--;
-		if (isWall(x, y)) {
-			x = prev_x;
-			y = prev_y;
-		}
-	}
-
-	void MoveRight() {
-		prev_x = x;
-		prev_y = y;
-		x++;
-		if (isWall(x, y)) {
-			x = prev_x;
-			y = prev_y;
+class MoveUp :public Move { // 상속 받은 Up 클래스. 위로 움직이는 기능 구현
+public:
+	void move(int& x, int& y) override {
+		if (!Move::isMoveBlocked(x, y - 1)) { // 미로 크기에 벗어나지 않거나 진행 방향에 벽이 없다면 위로 이동
+			y = y - 1; // 위로 가니깐 현재 위치의 y좌표값을 -1
 		}
 	}
 };
 
-class Player
-{
-private:
-	int x = NULL;
-	int y = NULL;
-	// 현재 위치
-
+class MoveDown :public Move { // 상속 받은 Down 클래스. 아래로 움직이는 기능 구현
 public:
-	Player(int start_x, int start_y) : x(start_x), y(start_y) {}
-	// 현재위치를 시작위치로 초기화
-
-	void Input_Processing(int direction) {		// 입력받아 행동하는 함수
-		
-		Move move(x, y);
-
-		switch (direction)			// 입력에 따른 행동 정의
-		{
-		case UP:
-			move.MoveUp(); break;
-		case DOWN:
-			move.MoveDown(); break;
-		case LEFT:
-			move.MoveLeft(); break;
-		case RIGHT:
-			move.MoveRight(); break;
+	bool isMoveBlocked(int x, int y) override {
+		return Move::isMoveBlocked(x, y + 1); // 아래로 가니깐 y좌표를 +1 함
+	}
+	void move(int& x, int& y) override {
+		if (!isMoveBlocked(x, y)) {
+			y = y + 1;
 		}
-
-	}
-
-	// 사실상 플레이어 위치만 표기하면 됨.
-	void print() {					// 화면 갱신
-		gotoxy(x, y, "\u2605");				// 플레이어의 위치는 ★로 표기
-	}
-
-	int get_x() {			// 나중에 x,y 위치 필요할 때 쓰는거
-		return x;
-	}
-	int get_y() {
-		return y;
 	}
 };
 
+class MoveLeft :public Move { // 상속 받은 Up 클래스. 왼쪽으로 움직이는 기능 구현
+public:
+	bool isMoveBlocked(int x, int y) override {
+		return Move::isMoveBlocked(x - 1, y); // 왼쪽으로 가니깐 x좌표를 -1 함
+	}
+	void move(int& x, int& y) override {
+		if (!isMoveBlocked(x, y)) {
+			x = x - 1;
+		}
+	}
+};
+
+class MoveRight :public Move { // 상속 받은 Up 클래스. 오른쪽으로 움직이는 기능 구현
+public:
+	bool isMoveBlocked(int x, int y) override {
+		return Move::isMoveBlocked(x + 1, y); // 오른쪽으로 가니깐 x좌표를 +1 함
+	}
+	void move(int& x, int& y) override {
+		if (!isMoveBlocked(x, y)) {
+			x = x + 1;
+		}
+	}
+};
+
+class Player { // 여기서 키보드 입력값을 받고, 이동 함수들을 호출 할 예정. 
+private:
+	int x, y;// 플레이어 좌표
+	int e_x, e_y; // 도착점 좌표 저장용
+	Move* currentMove; // 부모 클래스의 포인터로 자식 클래스의 객체를 동적 할당 함. 다형성을 드러냄
+
+public:
+	Player(int start_x, int start_y, int end_x, int end_y) : x(start_x), y(start_y), e_x(end_x), e_y(end_y), currentMove(nullptr) {} // 생성자 정의.포인터 값 null로 지정
+	~Player() {                // 소멸자 정의
+		delete	currentMove;   // 매 판이 끝나면 플레이어 이동을 담당한 동적 할당된 메모리들을 삭제함
+	}
+
+	void handleInput() {
+		char direction; // 키보드 값 입력 받을 변수
+		direction = _getch(); // 키보드 값 입력 받음
+
+		switch (direction) { 
+		case'w':
+		case'W':
+			currentMove = new MoveUp(); // 포인터 변수에 객체를 동적 할당
+			break;
+		case's':
+		case'S':
+			currentMove = new MoveDown();
+			break;
+		case'a':
+		case'A':
+			currentMove = new MoveLeft();
+			break;
+		case'd':
+		case'D':
+			currentMove = new MoveRight();
+			break;
+		}
+
+		if (currentMove != nullptr) {
+			currentMove->move(x, y); // move 함수 호출. 다형성 사용
+		}
+	}
+
+	int getX() const { return x; } // 외부에서 x값을 가져갈 때. x 값을 건들이지 않도록 const를 사용
+	int getY() const { return y; }
+};
 
 int start_x, start_y; // 시작 위치 변수 저장용
+int end_x, end_y; // 도착점 위치 변수 저장용 
 
-// 아래 함수 내용은 그냥 main에 복붙하는 편이 편할듯, 최소한 Randomstart랑 Player는 해야함
+// 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수
 void Playing() {
-	char input;				// 입력 저장용 변수
+	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
+	StartMaze(); // 미로를 그리기 위한 준비 및 미로 생성 함수 호출
+	StartFinishPoint(MAZE_SIZE); // 출발점과 도착점을 생성하는 함수 호출
 
-	RandomStart(5, 5);		// 미로 범위를 받도록
-	Player player(start_x, start_y);		// 객체 생성, RandomStart 나중 먼저 상관 없을듯?
-
-	while (true)			// 입력을 받으면 움직이도록
+	Player player(start_x, start_y, end_x, end_y); // 플레이어 객체 생성
+	
+	while (true)			// 입력을 받으면 움직이도록 while 문을 계속 수행
 	{
-		player.print();
+		printMaze(player.getX(), player.getY(), end_x, end_y); // 미로를 그리는 함수 호출
 		cursor(0);			// 0 = 깜빡임 제거 / 1 = 깜빡임 생성
 
-		if (kbhit()) {		// kbhit() <<< 키보드 입력 확인
+		player.handleInput(); // 키보드 입력 받는 함수 호출
 
-			input = getch(); // 입력 저장
-
-			switch (input)
-			{
-			case UP:
-			case DOWN:
-			case LEFT:
-			case RIGHT:
-				player.Input_Processing(input); break;
-			}
-		}
 		Sleep(5);			// 5ms 간격으로 화면 갱신
 		system("cls");		// 화면 갱신
+
+		if (player.getX() == end_x && player.getY() == end_y) { // 플레이어가 도착 지점에 도착한 경우, 게임 클리어!
+			DrawClear();
+			system("cls");
+			break;
+		}	
 	}
 }
 
-void cursor(int n) {
+void StartFinishPoint(int MAZE_SIZE) { // 출발점과 도착점을 생성하는 함수
+
+	// 출발점과 도착점 설정
+	int n = MAZE_SIZE - 2; // 미로사이즈가 10이라 가정하면 바깥에 존재하는 벽은 0과 9로 이루어져 있을테니, 움직일 수 있는 미로 내부의 젤 끝은 1과 8이 되므로 -2를 함
+
+	// 출발점 설정
+	int randomStart = rand() % 4; // rand 함수가 반환하는 0부터 RAND_MAX의 값 중 4로 나눈 나머지, 즉 0, 1, 2, 3만 나오게 끔 하는 함수
+	switch (randomStart) {
+	case 0: // (1, 1)을 출발점으로 설정
+		start_x = 1;
+		start_y = 1;
+		break;
+	case 1: // (1, n)을 출발점으로 설정
+		start_x = 1;
+		start_y = n;
+		break;
+	case 2: // (n, 1)을 출발점으로 설정
+		start_x = n;
+		start_y = 1;
+		break;
+	case 3: // (n, n)을 출발점으로 설정
+		start_x = n;
+		start_y = n;
+		break;
+
+	}
+	end_x = MAZE_SIZE - 1 - start_x; // 이 수식을 계산하면 출발점의 대각선 반대에 있는 꼭짓점의 좌표가 도착점으로 설정 됨
+	end_y = MAZE_SIZE - 1 - start_y;
+}
+
+void cursor(int n) { // 커서 깜빡임 제거 용도
 	HANDLE hConsole;
 	CONSOLE_CURSOR_INFO ConsoleCursor;
 
@@ -140,39 +186,4 @@ void cursor(int n) {
 	ConsoleCursor.dwSize = 1;
 
 	SetConsoleCursorInfo(hConsole, &ConsoleCursor);
-}
-
-// 시작 위치를 랜덤하게, 미로의 최대 범위를 받도록
-int RandomStart(int max_x, int max_y) {
-	random_device rd;
-	mt19937  generator(rd());			// mt19937 엔진 사용
-
-	// x, y의 최대 범위 내의 값을 생성하는 distribution
-	uniform_int_distribution<int> distribution_x(0, max_x); // x 좌표의 범위
-	uniform_int_distribution<int> distribution_y(0, max_y); // y 좌표의 범위
-
-	do {
-		start_x = distribution_x(generator); // 무작위 위치에서 시작
-		start_y = distribution_y(generator);
-
-	} while (isWall(start_x, start_y)); // 만약 (x, y)가 벽으로 판정되면 다시 위치를 랜덤하게 선택, isWall 함수로 벽 판정을 한다고 가정
-
-	return start_x, start_y;
-}
-
-// 해당 위치가 벽인지 확인하는 함수 / 여기서는 벽을 문자 '#'으로 정의
-bool isWall(int x, int y) {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);	// 콘솔과 상호작용하기 위한 핸들
-	CHAR_INFO Pos_buffer;								// 화면 문자를 저장할 변수
-	COORD bufferSize = { 2, 1 };						// 2x1 크기의 문자를 읽고 저장 (full-width character)
-	COORD bufferCoord = { 0, 0 };						// 좌상단부터 문자를 읽음
-
-	// 읽어올 화면 영역을 설정, 현재 위치의 2x1 크기의 영역을 읽음
-	SMALL_RECT readRegion = { static_cast<SHORT>(x), static_cast<SHORT>(y), static_cast<SHORT>(x + 1), static_cast<SHORT>(y) };
-
-	// 현재 위치의 화면 문자를 읽고 Pos_buffer에 저장
-	ReadConsoleOutput(hConsole, &Pos_buffer, bufferSize, bufferCoord, &readRegion);
-
-	// 읽어온 문자가 '■' 문자인지 확인하여 반환
-	return (Pos_buffer.Char.UnicodeChar == L'■');
 }
