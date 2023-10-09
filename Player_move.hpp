@@ -3,10 +3,6 @@
 
 #include <iostream>	
 #pragma warning(disable : 4996) // kbhit 오류 무시
-#define UP 72
-#define DOWN 80
-#define LEFT 75
-#define RIGHT 77
 using namespace std;
 
 void DrawClear();

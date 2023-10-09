@@ -1,11 +1,11 @@
-﻿#include "Player_move.hpp"
-#include "Text.hpp"
-#include "a_maze_map.hpp"
-#include "fmod.hpp"
-#include <windows.h>	
+﻿#include <windows.h>
 #include <iostream>
-#include <conio.h> // getch 함수를 사용하기 위함
+#include <conio.h> // _getch 함수를 사용하기 위함
 #include <vector>
+#include "Text.hpp"
+#include "fmod.hpp"
+#include "Player_move.hpp"
+#include "a_maze_map.hpp"
 using namespace std;
 
 extern const int N; // a_maze_map.cpp 에서 참조한 미로 크기 
@@ -125,13 +125,11 @@ int end_x, end_y; // 도착점 위치 변수 저장용
 void Playing() {
 	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
 	StartMaze(); // 미로를 그리기 위한 준비 및 미로 생성 함수 호출
-	
-	StartFinishPoint(MAZE_SIZE);
+	StartFinishPoint(MAZE_SIZE); // 출발점과 도착점을 생성하는 함수 호출
 
-	Player player(start_x, start_y, end_x, end_y);		// 객체 생성
+	Player player(start_x, start_y, end_x, end_y); // 플레이어 객체 생성
 	
-
-	while (true)			// 입력을 받으면 움직이도록
+	while (true)			// 입력을 받으면 움직이도록 while 문을 계속 수행
 	{
 		printMaze(player.getX(), player.getY(), end_x, end_y); // 미로를 그리는 함수 호출
 		cursor(0);			// 0 = 깜빡임 제거 / 1 = 깜빡임 생성
@@ -141,14 +139,13 @@ void Playing() {
 		Sleep(5);			// 5ms 간격으로 화면 갱신
 		system("cls");		// 화면 갱신
 
-		if (player.getX() == end_x && player.getY() == end_y) {
-			DrawClear(); 
+		if (player.getX() == end_x && player.getY() == end_y) { // 플레이어가 도착 지점에 도착한 경우, 게임 클리어!
+			DrawClear();
 			system("cls");
 			break;
 		}	
 	}
 }
-
 
 void StartFinishPoint(int MAZE_SIZE) { // 출발점과 도착점을 생성하는 함수
 
