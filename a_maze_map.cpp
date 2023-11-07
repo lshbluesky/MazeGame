@@ -6,8 +6,8 @@
 
 using namespace std;
 
-// 미로의 크기 (홀수로 설정). 이 N은 헤더파일에 정의되어 있음
-vector<vector<int>> maze(N, vector<int>( N, 1)); //(1은 벽, 0은 길)
+int N = 101; // 미로의 크기 (홀수로 설정)
+vector<vector<int>> maze(N, vector<int>(N, 1)); // (1은 벽, 0은 길)
 
 int dx[] = { 0, 1, 0, -1 }; // 상하좌우 이동을 위한 배열
 int dy[] = { -1, 0, 1, 0 };

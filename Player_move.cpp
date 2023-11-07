@@ -3,14 +3,13 @@
 #include <conio.h> // _getch 함수를 사용하기 위함
 #include <vector>
 #include "Text.hpp"
-#include "fmod.hpp"
 #include "Player_move.hpp"
 #include "a_maze_map.hpp"
 using namespace std;
 
-extern const int N; // a_maze_map.cpp 에서 참조한 미로 크기 
-extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 미로 선언
-const int MAZE_SIZE = N; // 미로 크기
+extern int N; // a_maze_map.cpp 에서 참조한 미로 크기 
+extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 이차원 벡터 미로
+int MAZE_SIZE = N; // 미로 크기
 
 class Move { // 이동 함수를 담당하는 기본 클래스
 public:
@@ -121,8 +120,12 @@ public:
 int start_x, start_y; // 시작 위치 변수 저장용
 int end_x, end_y; // 도착점 위치 변수 저장용 
 
-// 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수
-void Playing() {
+// 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수, 미로 크기를 size 매개 변수로 받음.
+void Playing(int size) {
+	N = size; // 매개 변수 size 로 미로 크기 정적 변수 재설정
+	MAZE_SIZE = size; // 매개 변수 size 로 MAZE_SIZE 정적 변수 재설정
+	maze.resize(size, vector<int>(size, 1)); // 매개 변수 size 로 이차원 벡터 미로 정적 변수의 크기 재설정
+
 	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
 	StartMaze(); // 미로를 그리기 위한 준비 및 미로 생성 함수 호출
 	StartFinishPoint(MAZE_SIZE); // 출발점과 도착점을 생성하는 함수 호출
