@@ -6,7 +6,7 @@
 using namespace std;
 
 void DrawClear();
-void Playing();
+void Playing(int size);
 void cursor(int n); // 커서 깜박임 제거
 void StartFinishPoint(int MAZE_SIZE);
 

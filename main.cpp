@@ -232,7 +232,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg1Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg1Lv1);
 			Fmod->playSound(Stg1Lv1, 0, false, &channel1); // 유아용 스테이지 Level 1 BGM 재생
 			system("cls");
-			Playing();
+			Playing(13);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 2: // 유아용 스테이지의 Level 2를 선택한 경우
@@ -240,7 +240,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg1Lv2.ogg", FMOD_LOOP_NORMAL, 0, &Stg1Lv2);
 			Fmod->playSound(Stg1Lv2, 0, false, &channel1); // 유아용 스테이지 Level 2 BGM 재생
 			system("cls");
-			Playing();
+			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 3: // 일반 플레이어용 스테이지의 Level 1을 선택한 경우
@@ -248,7 +248,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg2Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg2Lv1);
 			Fmod->playSound(Stg2Lv1, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 1 BGM 재생
 			system("cls");
-			Playing();
+			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 4: // 일반 플레이어용 스테이지의 Level 2를 선택한 경우
@@ -256,7 +256,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg2Lv2.mp3", FMOD_LOOP_NORMAL, 0, &Stg2Lv2);
 			Fmod->playSound(Stg2Lv2, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 2 BGM 재생
 			system("cls");
-			Playing();
+			Playing(19);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 5: // 노인분들을 위한 스테이지의 Level 1을 선택한 경우
@@ -264,7 +264,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg3Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg3Lv1);
 			Fmod->playSound(Stg3Lv1, 0, false, &channel1); // 노인분들을 위한 스테이지 Level 1 BGM 재생
 			system("cls");
-			Playing();
+			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 6: // 노인분들을 위한 스테이지의 Level 2를 선택한 경우
@@ -272,7 +272,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg3Lv2.ogg", FMOD_LOOP_NORMAL, 0, &Stg3Lv2);
 			Fmod->playSound(Stg3Lv2, 0, false, &channel1); // 노인분들을 위한 스테이지 Level 2 BGM 재생
 			system("cls");
-			Playing();
+			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
 		case 0: // 메인 화면으로 돌아가는 메뉴를 선택한 경우
