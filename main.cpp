@@ -14,7 +14,7 @@
 using namespace std;
 using namespace FMOD;
 
-//FMOD 라이브러리 및 사운드 출력을 위한 전역 변수 정의
+// FMOD 라이브러리 및 사운드 출력을 위한 전역 변수 정의
 FMOD::System* Fmod(nullptr); // FMOD 라이브러리를 사용하기 위한 Fmod 시스템 클래스를 가리키는 Fmod 포인터 생성
 FMOD::Sound* MainBGM(nullptr); // 배경음악을 재생하기 위한 사운드 객체를 가리키는 MainBGM 포인터 생성
 FMOD::Sound* StageBGM(nullptr); // 스테이지 선택 메뉴 음악을 재생하기 위한 사운드 객체를 가리키는 StageBGM 포인터 생성
@@ -31,6 +31,18 @@ FMOD::Channel* channel1(nullptr); // 채널 1에서 배경음악을 재생
 FMOD::Channel* channel2(nullptr); // 채널 2에서 효과음을 재생
 FMOD_RESULT result; // FMOD 관련 함수가 잘 작동하는지의 여부를 체크하기 위한 변수를 생성
 void* extradriverdata(nullptr); // FMOD 라이브러리의 init()에서 사용되는 포인터
+
+// 유니버셜 디자인 - 글꼴 크기 조절을 위한 구조체 전역 변수 정의
+CONSOLE_FONT_INFOEX fontInfo;
+HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+void fontSize(unsigned short n) { // 글꼴 크기를 매개 변수로 받은 값으로 조절하는 함수
+	fontInfo.cbSize = sizeof(CONSOLE_FONT_INFOEX);
+	fontInfo.nFont = 0;
+	fontInfo.dwFontSize.X = n / 2; // 가로 글꼴 크기
+	fontInfo.dwFontSize.Y = n; // 세로 글꼴 크기 (콘솔의 특성상 가로:세로 = 1:2 비율로 지정해야 함)
+	SetCurrentConsoleFontEx(hConsole, FALSE, &fontInfo); // SetCurrentConsoleFontEx 함수를 호출하여 글꼴 크기 적용
+}
 
 // 메인 화면을 그리기 위한 클래스 생성
 class StartMenu {
@@ -201,7 +213,7 @@ int DrawStageMenu() { // 플레이어 연령 별 스테이지를 선택하는 �
 	gotoxy(31, 8, "▦ 일반 플레이어용 스테이지");
 	gotoxy(62, 8, "▦ 노인분들을 위한 스테이지");
 	TextColor(DEEP_WHITE);
-	gotoxy(62, 5, "0. 처음 메인 화면으로 이동");
+	gotoxy(62, 5, "9. 처음 메인 화면으로 이동");
 	gotoxy(6, 10, "1. Level 1");
 	gotoxy(6, 11, "2. Level 2");
 	gotoxy(31, 10, "3. Level 1");
@@ -264,6 +276,8 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg3Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg3Lv1);
 			Fmod->playSound(Stg3Lv1, 0, false, &channel1); // 노인분들을 위한 스테이지 Level 1 BGM 재생
 			system("cls");
+			system("mode con:cols=48 lines=16");
+			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
 			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -272,14 +286,18 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg3Lv2.ogg", FMOD_LOOP_NORMAL, 0, &Stg3Lv2);
 			Fmod->playSound(Stg3Lv2, 0, false, &channel1); // 노인분들을 위한 스테이지 Level 2 BGM 재생
 			system("cls");
+			system("mode con:cols=50 lines=18");
+			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
 			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
-		case 0: // 메인 화면으로 돌아가는 메뉴를 선택한 경우
+		case 9: // 메인 화면으로 돌아가는 메뉴를 선택한 경우
 			Fmod->playSound(StageBGM, 0, true, &channel1); // 메인 화면으로 돌아가므로 스테이지 선택 메뉴 배경음악 재생 정지
 			system("cls");
-			return 0;
-		default:
+			return 9;
+		default: // 올바르지 않은 스테이지 메뉴 번호를 입력한 경우
+			cin.clear(); // cin 오류 플래그를 초기화
+			cin.ignore(LLONG_MAX, '\n'); // 충분히 큰 수(LLONG_MAX) 만큼 입력 버퍼를 비워서 오류 문구가 반복 출력되는 문제를 해결
 			gotoxy(6, 23, "※ 잘못된 스테이지 번호입니다. ", DEEP_RED);
 			system("pause");
 			system("cls");
@@ -301,6 +319,8 @@ void DrawClear() { // 미로 탈출 성공하면 게임 클리어 화면을 그�
 	Fmod->playSound(Stage_Clear, 0, false, &channel2); // 스테이지 클리어 효과음 재생
 	Fmod->update();
 
+	fontSize(16); // 원래의 글꼴 크기로 복원
+	system("mode con:cols=94 lines=30"); // 원래의 콘솔 창 크기로 복원
 	TextColor(DEEP_WHITE); // 메인 화면의 테두리와 디자인 요소는 그대로 출력
 	gotoxy(2, 1, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
 	gotoxy(2, 2, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
@@ -350,7 +370,7 @@ int main(void)
 			Fmod->playSound(MainBGM, 0, true, &channel1); // 스테이지 선택 메뉴로 이동하므로 기존에 재생하던 배경음악 재생 정지
 			Fmod->update();
 			system("cls");
-			if (StageMenu() == 0) // 스테이지 선택 메뉴에서 메인 화면으로 돌아가는 메뉴를 선택한 경우 (반환값이 0인 경우)
+			if (StageMenu() == 9) // 스테이지 선택 메뉴에서 메인 화면으로 돌아가는 메뉴를 선택한 경우 (반환값이 9인 경우)
 			{
 				Fmod->playSound(MainBGM, 0, false, &channel1); // 배경음악 다시 재생
 				Fmod->update();
