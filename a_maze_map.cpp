@@ -21,7 +21,7 @@ void printMaze(int player_x, int player_y, int end_x, int end_y) {
             else if (j == end_x && i == end_y) {
                 cout << "◈"; // 도착점 아이콘
             }
-            else if (maze[j][i] == 0) {
+            else if (maze[j][i] == 0 || maze[j][i] == 2) { // 폭탄을 보이지 않게 해 난이도를 상승시킴
                 cout << "  "; // 길
             }
             else {
