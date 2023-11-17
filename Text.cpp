@@ -1,5 +1,4 @@
 ﻿#include <iostream>
-#include <windows.h>
 #include "Text.hpp"
 
 // 위치를 지정하여 문자열 출력
