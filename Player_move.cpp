@@ -73,6 +73,9 @@ public:
 	}
 };
 
+int start_x, start_y; // 시작 위치 변수 저장용
+int end_x, end_y; // 도착점 위치 변수 저장용 
+
 class Player { // 여기서 키보드 입력값을 받고, 이동 함수들을 호출 할 예정. 
 private:
 	int x, y;// 플레이어 좌표
@@ -115,10 +118,10 @@ public:
 
 	int getX() const { return x; } // 외부에서 x값을 가져갈 때. x 값을 건들이지 않도록 const를 사용
 	int getY() const { return y; }
+
+	void restart() { x = start_x; y = start_y; }	//폭탄을 밟았을 때 쓰는 함수 / 플레이어의 위치를 처음 위치로 이동시킴
 };
 
-int start_x, start_y; // 시작 위치 변수 저장용
-int end_x, end_y; // 도착점 위치 변수 저장용 
 
 // 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수, 미로 크기를 size 매개 변수로 받음.
 void Playing(int size) {
@@ -129,15 +132,23 @@ void Playing(int size) {
 	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
 	StartMaze(); // 미로를 그리기 위한 준비 및 미로 생성 함수 호출
 	StartFinishPoint(MAZE_SIZE); // 출발점과 도착점을 생성하는 함수 호출
+	bombset();					//미로 내에 폭탄을 무작위로 생성
 
 	Player player(start_x, start_y, end_x, end_y); // 플레이어 객체 생성
+
 	
+
 	while (true)			// 입력을 받으면 움직이도록 while 문을 계속 수행
 	{
 		printMaze(player.getX(), player.getY(), end_x, end_y); // 미로를 그리는 함수 호출
 		cursor(0);			// 0 = 깜빡임 제거 / 1 = 깜빡임 생성
 
 		player.handleInput(); // 키보드 입력 받는 함수 호출
+
+		if (maze[player.getX()][player.getY()] == 2) {	//플레이어가 이동한 후 그 위치에 폭탄이 있다면
+			maze[player.getX()][player.getY()] = 0;		//우선 폭탄이 터졌으므르 폭탄을 없애고
+			player.restart();							//플레이어를 시작 위치로 이동시킴
+		}
 
 		Sleep(5);			// 5ms 간격으로 화면 갱신
 		system("cls");		// 화면 갱신
@@ -179,6 +190,37 @@ void StartFinishPoint(int MAZE_SIZE) { // 출발점과 도착점을 생성하는
 	end_x = MAZE_SIZE - 1 - start_x; // 이 수식을 계산하면 출발점의 대각선 반대에 있는 꼭짓점의 좌표가 도착점으로 설정 됨
 	end_y = MAZE_SIZE - 1 - start_y;
 }
+
+
+//폭탄 설치 함수
+void bombset() {	
+	int bombX, bombY;		//폭탄의 좌표값
+	int count = 0;			//폭탄 개수
+
+	//프로그램 실행을 위해 5로 설정했는데, 전역변수를 하나 만들고 난이도 별로 전역변수 값을 다르게 한 다음 5 위치에 변수를 넣으면 될 듯
+	while (count != 5) {
+
+		bombX = rand() % (MAZE_SIZE - 2) + 1;		//무작위 좌표 선택, 난수 생성기 초기화는 Playing함수에서 이미 함
+		bombY = rand() % (MAZE_SIZE - 2) + 1;
+
+		//폭탄이 미로 밖에 생성될 경우 이를 미로에 반영하지 않고 재생성
+		if (bombX < 0 || bombX >= MAZE_SIZE || bombY < 0 || bombY >= MAZE_SIZE) {
+			continue;
+		}
+
+		//폭탄이 시작지점이나 목적지, 혹은 벽에 생길 경우 역시 재생성
+		if (maze[bombX][bombY] == 1 || bombX == start_x && bombY == start_y || bombX == end_x && bombY == end_y) {
+			continue;
+		}
+
+		//벡터 내에서는 폭탄을 2로 표시
+		maze[bombX][bombY] = 2;
+
+		//폭탄이 올바르게 생성되면 값이 1 증가, continue문으로 스킵하기 때문에 설정한 개수에 달할 때 까지 계속 생성
+		count += 1;
+	}
+};
+
 
 void cursor(int n) { // 커서 깜빡임 제거 용도
 	HANDLE hConsole;
