@@ -131,6 +131,7 @@ public:
 void Playing(int size) {
 	N = size; // 매개 변수 size 로 미로 크기 정적 변수 재설정
 	MAZE_SIZE = size; // 매개 변수 size 로 MAZE_SIZE 정적 변수 재설정
+	maze.clear();
 	maze.resize(size, vector<int>(size, 1)); // 매개 변수 size 로 이차원 벡터 미로 정적 변수의 크기 재설정
 
 	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
