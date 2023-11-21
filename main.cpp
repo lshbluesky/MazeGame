@@ -175,13 +175,21 @@ void DrawGameInfo() // 게임 정보 화면을 출력하는 함수
 	gotoxy(10, 18, "- Level 1");
 	gotoxy(10, 19, "- Level 2");
 
-	TextColor(DEEP_OC); //조작키 설명 입력
-	gotoxy(52, 10, "▦ 조작키 설명");
+	TextColor(DEEP_OC); // 아이콘 설명 입력
+	gotoxy(40, 10, "▦ 아이콘 설명");
 	TextColor(DEEP_WHITE);
-	gotoxy(54, 12, "▦ w : 위");
-	gotoxy(54, 13, "▦ s : 아래");
-	gotoxy(54, 14, "▦ a : 왼쪽");
-	gotoxy(54, 15, "▦ d : 오른쪽");
+	gotoxy(42, 12, "★ : 플레이어");
+	gotoxy(42, 13, "◈ : 도착 지점");
+	gotoxy(42, 14, "♠ : 폭탄(밟으면 원위치로)");
+	gotoxy(42, 15, "■ : 벽");
+
+	TextColor(DEEP_OC); // 조작키 설명 입력
+	gotoxy(71, 10, "▦ 조작키 설명");
+	TextColor(DEEP_WHITE);
+	gotoxy(73, 12, "▦ w : 위");
+	gotoxy(73, 13, "▦ s : 아래");
+	gotoxy(73, 14, "▦ a : 왼쪽");
+	gotoxy(73, 15, "▦ d : 오른쪽");
 
 	gotoxy(6, 22, "※ 아무키나 누르면 메인 화면으로 돌아갑니다...", DEEP_WHITE);
 	system("pause>null"); // 게임 정보 화면을 출력하고 아무 키를 입력받을 때까지 일시정지, 아무 키나 누르면 다시 메인 화면으로 돌아감.
