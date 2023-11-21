@@ -15,6 +15,7 @@ extern FMOD::Channel* channel2; // 채널 2에서 효과음을 재생하도록 �
 extern int N; // a_maze_map.cpp 에서 참조한 미로 크기 
 extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 이차원 벡터 미로
 int MAZE_SIZE = N; // 미로 크기
+extern int BombCount;// main.cpp 에서 참조한 폭탄 개수
 
 class Move { // 이동 함수를 담당하는 기본 클래스
 public:
@@ -127,6 +128,7 @@ public:
 	void restart() { x = start_x; y = start_y; }	//폭탄을 밟았을 때 쓰는 함수 / 플레이어의 위치를 처음 위치로 이동시킴
 };
 
+int turnCount = 0; //이동 횟수를 저장하는 변수
 // 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수, 미로 크기를 size 매개 변수로 받음.
 void Playing(int size) {
 	N = size; // 매개 변수 size 로 미로 크기 정적 변수 재설정
@@ -150,8 +152,9 @@ void Playing(int size) {
 		cursor(0);			// 0 = 깜빡임 제거 / 1 = 깜빡임 생성
 
 		player.handleInput(); // 키보드 입력 받는 함수 호출
+		turnCount++;		  // 키보드 입력시 숫자 증가
 
-		if (maze[player.getX()][player.getY()] == 2) {	// 플레이어가 이동한 후 그 위치에 폭탄이 있다면
+		if (maze[player.getX()][player.getY()] == 2 && turnCount % 2 == 0) {	// 플레이어가 짝수 번 이동한 후 그 위치에 폭탄이 있다면
 			Fmod->playSound(Die, 0, false, &channel2);  // 폭탄을 밟으면 플레이어 사망 효과음 재생
 			Fmod->update();
 			maze[player.getX()][player.getY()] = 0;		// 우선 폭탄이 터졌으므르 폭탄을 없애고
@@ -204,8 +207,8 @@ void bombset() {
 	int bombX, bombY;		// 폭탄의 좌표값
 	int count = 0;			// 폭탄 개수
 
-	// 프로그램 실행을 위해 5로 설정했는데, 전역변수를 하나 만들고 난이도 별로 전역변수 값을 다르게 한 다음 5 위치에 변수를 넣으면 될 듯
-	while (count != 5) {
+	// 난이도 별로 폭탄 생성
+	while (count != BombCount) {
 
 		bombX = rand() % (MAZE_SIZE - 2) + 1;		//무작위 좌표 선택, 난수 생성기 초기화는 Playing함수에서 이미 함
 		bombY = rand() % (MAZE_SIZE - 2) + 1;

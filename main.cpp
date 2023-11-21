@@ -230,6 +230,7 @@ int DrawStageMenu() { // 플레이어 연령 별 스테이지를 선택하는 �
 	return menu; // 입력받은 스테이지 메뉴 번호를 반환. (StageMenu 함수의 switch 문에서 이의 반환값이 사용됨.)
 }
 
+int BombCount;	  // 폭탄 개수 저장 변수
 int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 	Fmod->createStream(".\\Sounds\\Menu_SelectStage.ogg", FMOD_LOOP_NORMAL, 0, &StageBGM); // 스테이지 선택 메뉴 배경음악 사운드 객체 생성.
 	Fmod->playSound(StageBGM, 0, false, &channel1); // 스테이지 선택 메뉴 배경음악 재생
@@ -244,6 +245,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg1Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg1Lv1);
 			Fmod->playSound(Stg1Lv1, 0, false, &channel1); // 유아용 스테이지 Level 1 BGM 재생
 			system("cls");
+			BombCount = 0;
 			Playing(13);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -252,6 +254,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg1Lv2.ogg", FMOD_LOOP_NORMAL, 0, &Stg1Lv2);
 			Fmod->playSound(Stg1Lv2, 0, false, &channel1); // 유아용 스테이지 Level 2 BGM 재생
 			system("cls");
+			BombCount = 2;
 			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -260,6 +263,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg2Lv1.mp3", FMOD_LOOP_NORMAL, 0, &Stg2Lv1);
 			Fmod->playSound(Stg2Lv1, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 1 BGM 재생
 			system("cls");
+			BombCount = 4;
 			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -268,6 +272,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->createStream(".\\Sounds\\Stg2Lv2.mp3", FMOD_LOOP_NORMAL, 0, &Stg2Lv2);
 			Fmod->playSound(Stg2Lv2, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 2 BGM 재생
 			system("cls");
+			BombCount = 7;
 			Playing(19);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -288,6 +293,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			system("cls");
 			system("mode con:cols=50 lines=18");
 			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
+			BombCount = 1;
 			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;

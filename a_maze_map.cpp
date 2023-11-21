@@ -8,6 +8,7 @@ using namespace std;
 
 int N = 101; // 미로의 크기 (홀수로 설정)
 vector<vector<int>> maze(N, vector<int>(N, 1)); // (1은 벽, 0은 길)
+extern int turnCount;
 
 int dx[] = { 0, 1, 0, -1 }; // 상하좌우 이동을 위한 배열
 int dy[] = { -1, 0, 1, 0 };
@@ -21,8 +22,11 @@ void printMaze(int player_x, int player_y, int end_x, int end_y) {
             else if (j == end_x && i == end_y) {
                 cout << "◈"; // 도착점 아이콘
             }
-            else if (maze[j][i] == 0 || maze[j][i] == 2) { // 폭탄을 보이지 않게 해 난이도를 상승시킴
+            else if (maze[j][i] == 0 || (maze[j][i] == 2 && turnCount % 2 == 1)) { // 폭탄을 보이지 않게 해 난이도를 상승시킴
                 cout << "  "; // 길
+            }
+            else if (maze[j][i] == 2 && turnCount % 2 == 0) { // 짝수 번 움직였을 때에는 폭탄을 표시
+                cout << "♠"; // 폭탄
             }
             else {
                 cout << "■"; // 벽
