@@ -1,4 +1,5 @@
 ﻿#include "a_maze_map.hpp"
+#include "Text.hpp"
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -17,16 +18,22 @@ void printMaze(int player_x, int player_y, int end_x, int end_y) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
             if (j == player_x && i == player_y) {
+                TextColor(DEEP_YELLOW);
                 cout << "★"; // 플레이어 아이콘
+                TextColor(DEEP_WHITE);
             }
             else if (j == end_x && i == end_y) {
+                TextColor(DEEP_GREEN);
                 cout << "◈"; // 도착점 아이콘
+                TextColor(DEEP_WHITE);
             }
             else if (maze[j][i] == 0 || (maze[j][i] == 2 && turnCount % 2 == 1)) { // 폭탄을 보이지 않게 해 난이도를 상승시킴
                 cout << "  "; // 길
             }
             else if (maze[j][i] == 2 && turnCount % 2 == 0) { // 짝수 번 움직였을 때에는 폭탄을 표시
+                TextColor(DEEP_OC);
                 cout << "♠"; // 폭탄
+                TextColor(DEEP_WHITE);
             }
             else {
                 cout << "■"; // 벽
