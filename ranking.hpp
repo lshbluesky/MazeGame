@@ -1,12 +1,11 @@
-
-#ifndef ranking.hpp
+﻿#ifndef ranking_hpp
 #define ranking_hpp
 
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <chrono>
 using namespace std;
-
 
 class Rank {
 public:
@@ -23,6 +22,5 @@ void UpdateRanking(const string& playerName, double playTime);
 string GetPlayerName();
 void showRanking();
 void PlayTime();
-
 
 #endif  

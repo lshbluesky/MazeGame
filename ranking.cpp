@@ -1,30 +1,27 @@
-#include "ranking.hpp"
-#include <iostream>
-#include <chrono>
+ï»¿#include <chrono>
 #include <thread>
-#include <fstream>
-#include <vector>
 #include <algorithm>
 #include <string>
-
-
+#include <iomanip>
+#include "ranking.hpp"
+#include "Text.hpp"
 using namespace std;
 
+// í”Œë ˆì´ ì‹œê°„ ì¸¡ì •ì„ ìœ„í•œ ì „ì—­ ë³€ìˆ˜ ì •ì˜
 chrono::steady_clock::time_point startTime;
+chrono::steady_clock::time_point endTime;
+chrono::duration<double> elapsed_seconds;
 
-void RecordPlaytime(const string& playerName) {
-    chrono::steady_clock::time_point endTime = chrono::steady_clock::now();
-    chrono::duration<double> elapsed_seconds = endTime - startTime;
-
+void RecordPlaytime(const string& playerName) { // í”Œë ˆì´ ì‹œê°„ì„ íŒŒì¼ì— ê¸°ë¡í•˜ì—¬ ì €ì¥
     ofstream outputFile("C:\\Temp\\playtime.txt", ios::app);
     if (outputFile.is_open()) {
-        outputFile << playerName << "ÀÇ ÇÃ·¹ÀÌ ½Ã°£: " << elapsed_seconds.count() << " ÃÊ\n";
+        outputFile << playerName << "ì˜ í”Œë ˆì´ ì‹œê°„: " << elapsed_seconds.count() << " ì´ˆ\n";
         outputFile.close();
     }
 }
 
 void UpdateRanking(const string& playerName, double playTime) {
-    // ÇÃ·¹ÀÌ¾î ·©Å· Á¤º¸ ÀĞ±â
+    // í”Œë ˆì´ì–´ ë­í‚¹ ì •ë³´ ì½ê¸°
     vector<Rank> playerRanking;
     ifstream rankingFile("C:\\Temp\\playtime.txt");
 
@@ -36,70 +33,66 @@ void UpdateRanking(const string& playerName, double playTime) {
         rankingFile.close();
     }
 
-    // ÇÃ·¹ÀÌ¾î ·©Å·¿¡ Ãß°¡ÇÏ°í Á¤·Ä
+    // í”Œë ˆì´ì–´ ë­í‚¹ì— ì¶”ê°€í•˜ê³  ì •ë ¬
     playerRanking.push_back({ playerName, playTime });
     sort(playerRanking.begin(), playerRanking.end(), [](const Rank& a, const Rank& b) {
         return a.playTime < b.playTime;
         });
 
-    // »óÀ§ 10¸í¸¸ À¯Áö
+    // ìƒìœ„ 10ëª…ë§Œ ìœ ì§€
     if (playerRanking.size() > 10) {
         playerRanking.resize(10);
     }
 
-    // ÇÃ·¹ÀÌ¾î ·©Å· ÆÄÀÏ¿¡ ÀúÀå
+    // í”Œë ˆì´ì–´ ë­í‚¹ íŒŒì¼ì— ì €ì¥
     ofstream rankingFileOut("C:\\Temp\\playtime.txt");
     if (rankingFileOut.is_open()) {
         for (const Rank& player : playerRanking) {
             rankingFileOut << player.name << " " << player.playTime << endl;
         }
         rankingFileOut.close();
-        cout << "·©Å·ÀÌ ÀúÀåµÇ¾ú½À´Ï´Ù." << endl;
+        cout << "ë­í‚¹ì´ ì €ì¥ë˜ì—ˆìŠµë‹ˆë‹¤." << endl;
     }
     else {
-        cerr << "·©Å· ÆÄÀÏÀ» ¿­ ¼ö ¾ø½À´Ï´Ù." << endl;
+        cerr << "ë­í‚¹ íŒŒì¼ì„ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
     }
 }
 
 string GetPlayerName() {
     string playerName;
-    cout << " ÇÃ·¹ÀÌ¾îÀÇ ´Ğ³×ÀÓÀ» ÀÔ·ÂÇÏ¼¼¿ä: ";
     getline(cin, playerName);
     return playerName;
 }
 
 void PlayTime() {
-    startTime = chrono::steady_clock::now();
-
-    // ÇÃ·¹ÀÌ¾îÀÇ ´Ğ³×ÀÓ ÀÔ·Â ¹Ş±â
+    // í”Œë ˆì´ì–´ì˜ ë‹‰ë„¤ì„ ì…ë ¥ ë°›ê¸°
     string playerName = GetPlayerName();
 
-    // °ÔÀÓÀÌ ³¡³ª¸é ÇÃ·¹ÀÌ ½Ã°£ ±â·Ï
+    // ê²Œì„ì´ ëë‚˜ë©´ í”Œë ˆì´ ì‹œê°„ ê¸°ë¡
     RecordPlaytime(playerName);
 
-    // ·©Å· °»½Å
+    // ë­í‚¹ ê°±ì‹ 
     UpdateRanking(playerName, chrono::duration<double>(chrono::steady_clock::now() - startTime).count());
 }
 
 void showRanking() {
-   
-    cout << "==================== ·©Å· ====================" << endl;
-
     vector<Rank> playerRanking;
     ifstream rankingFile("C:\\Temp\\playtime.txt");
+    short i = 0;
 
     if (rankingFile.is_open()) {
         Rank tempPlayer;
         int rank = 1;
         while (rankingFile >> tempPlayer.name >> tempPlayer.playTime) {
-            cout << rank << "µî " << tempPlayer.name << ": " << tempPlayer.playTime << " ÃÊ" << endl;
+            gotoxy(7, 6 + i, "");
+            cout << "â–¦ " << setw(2) << rank << "ë“± " << setw(20) << tempPlayer.name << " : " << setw(18) << tempPlayer.playTime << " ì´ˆ" << endl;
+            cout << "      ------------------------------------------------------" << endl; // ìˆœìœ„ í•­ëª© ì‚¬ì´ì— êµ¬ë¶„ì„  ì¶”ê°€
             rank++;
+            i = i + 2;
         }
         rankingFile.close();
     }
     else {
-        cerr << "·©Å· ÆÄÀÏÀ» ¿­ ¼ö ¾ø½À´Ï´Ù." << endl;
+        cerr << "ë­í‚¹ íŒŒì¼ì„ ì—´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤." << endl;
     }
 }
-
-
