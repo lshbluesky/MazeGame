@@ -11,8 +11,8 @@ class Rank {
 public:
     std::string name;
     double playTime;
-
-    bool operator<(const Rank& other) const {
+    
+    bool operator<(const Rank& other) const { // Rank 클래스의 객체에 대하여 연산자 오버로딩(다형성) 특징 적용
         return playTime < other.playTime;
     }
 };

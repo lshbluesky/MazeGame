@@ -36,7 +36,7 @@ void UpdateRanking(const string& playerName, double playTime) {
     // 플레이어 랭킹에 추가하고 정렬
     playerRanking.push_back({ playerName, playTime });
     sort(playerRanking.begin(), playerRanking.end(), [](const Rank& a, const Rank& b) {
-        return a.playTime < b.playTime;
+        return a < b; // Rank 클래스의 객체에 대하여 연산자 오버로딩(다형성) 특징 적용
         });
 
     // 상위 10명만 유지
