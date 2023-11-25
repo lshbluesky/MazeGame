@@ -1,12 +1,18 @@
 ﻿#include <windows.h>
 #include <iostream>
 #include <conio.h> // _getch 함수를 사용하기 위함
+#include<queue>
+#include<set>
+#include<map>
+#include<chrono>
 #include <vector>
 #include "Text.hpp"
 #include "fmod.hpp"
 #include "Player_move.hpp"
 #include "a_maze_map.hpp"
 using namespace std;
+using namespace chrono;
+
 
 extern FMOD::System* Fmod; // Fmod 시스템 클래스를 가리키는 Fmod 포인터를 외부 참조
 extern FMOD::Sound* Die; // 플레이어 사망 효과음 재생 포인터를 외부 참조
@@ -16,6 +22,7 @@ extern int N; // a_maze_map.cpp 에서 참조한 미로 크기
 extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 이차원 벡터 미로
 int MAZE_SIZE = N; // 미로 크기
 extern int BombCount;// main.cpp 에서 참조한 폭탄 개수
+extern bool HighLevel;// main.cpp 에서 참조한 적 기능 포함 여부
 
 class Move { // 이동 함수를 담당하는 기본 클래스
 public:
@@ -79,6 +86,97 @@ public:
 	}
 };
 
+// 적 클래스	
+class Enemy {
+private:
+	int x, y; // 적의 좌표(최단 경로 계산을 위한 배열 번호)
+	int fx, fy; // 화면 출력을 위한 콘솔창 좌표값
+	vector<vector<int>> maze; // 미로 정보
+
+	int dx[4] = { 0, 0, 1, -1 }; // 상하좌우
+	int dy[4] = { 1, -1, 0, 0 };
+	map<pair<int, int>, pair<int, int>> parent; // 경로 추적을 위한 맵
+
+	// 해당 좌표가 이동 가능한지 확인하는 함수
+	bool isMoveBlocked(int x, int y) const {
+		if (x < 0 || x >= maze.size() || y < 0 || y >= maze[0].size()) {
+			return true;
+		}
+		return maze[x][y] == 1; // 벽이면 이동 불가
+	}
+
+	// 적의 현재 위치에서 목적지까지의 최단 경로를 찾는 함수
+	vector<pair<int, int>> findShortestPath(int player_x, int player_y) {
+		queue<pair<int, int>> q; // BFS를 위한 큐
+		set<pair<int, int>> visited; // 방문한 좌표를 저장하기 위한 set
+
+		// 시작 위치를 큐에 넣고 방문 표시
+		q.push(make_pair(x, y));
+		visited.insert(make_pair(x, y));
+
+		// BFS 수행
+		while (!q.empty()) {
+			pair<int, int> current = q.front();
+			q.pop();
+
+			// 목적지에 도달하면 경로 추적
+			if (current.first == player_x && current.second == player_y) {
+				vector<pair<int, int>> shortestPath;
+				while (current.first != x || current.second != y) {
+					shortestPath.push_back(current);
+					current = parent[current];
+				}
+				reverse(shortestPath.begin(), shortestPath.end());
+				return shortestPath;
+			}
+
+			// 현재 위치에서 이동 가능한 모든 방향을 확인
+			for (int i = 0; i < 4; ++i) {
+				int next_x = current.first + dx[i];
+				int next_y = current.second + dy[i];
+				pair<int, int> nextCoordinate = make_pair(next_x, next_y);
+
+				// 이동 가능한 좌표이고 아직 방문하지 않았다면 큐에 추가
+				if (!isMoveBlocked(next_x, next_y) && visited.find(nextCoordinate) == visited.end()) {
+					q.push(nextCoordinate);
+					visited.insert(nextCoordinate);
+					parent[nextCoordinate] = current;
+				}
+			}
+		}
+
+		// 도달할 수 없는 경우 빈 벡터 반환
+		return vector<pair<int, int>>();
+	}
+
+public:
+	// 생성자
+	Enemy(int enemy_x, int enemy_y, const vector<vector<int>>maze) : x(enemy_x), y(enemy_y), maze(maze), fx(enemy_x * 2), fy(enemy_y){} 
+
+	void moveTowardsExit(int player_x, int player_y) {
+		// 최단 경로 찾기
+		vector<pair<int, int>> shortestPath = findShortestPath(player_x, player_y);
+
+		// 최단 경로 따라 이동
+		for (const auto& next : shortestPath) {
+			x = next.first ;
+			y = next.second;
+			fx = x * 2;
+			fy = y;
+			break;
+		}		
+	}
+
+	// 화면 출력을 위한 좌표값 반환
+	int getX() const { return fx; }
+	int getY() const { return fy; }
+
+	// 배열 번호 반환
+	int GetX() const { return x; }
+	int GetY() const { return y; }
+
+};
+
 int start_x, start_y; // 시작 위치 변수 저장용
 int end_x, end_y; // 도착점 위치 변수 저장용 
 
@@ -129,6 +227,7 @@ public:
 };
 
 int turnCount = 0; //이동 횟수를 저장하는 변수
+
 // 스테이지 난이도 선택 후 본격적으로 게임 실행하는 함수, 미로 크기를 size 매개 변수로 받음.
 void Playing(int size) {
 	N = size; // 매개 변수 size 로 미로 크기 정적 변수 재설정
@@ -144,12 +243,32 @@ void Playing(int size) {
 	Fmod->update();
 
 	Player player(start_x, start_y, end_x, end_y); // 플레이어 객체 생성
+	Enemy enemy(start_x, start_y, maze); // 적 객체 생성
+
+	steady_clock::time_point start_time = steady_clock::now();
 
 	while (true)			// 입력을 받으면 움직이도록 while 문을 계속 수행
 	{
 		Fmod->update();
 		printMaze(player.getX(), player.getY(), end_x, end_y); // 미로를 그리는 함수 호출
 		cursor(0);			// 0 = 깜빡임 제거 / 1 = 깜빡임 생성
+
+		steady_clock::time_point current_time = steady_clock::now(); // 현재 시간을 기록하는 시점
+		duration<double> elapsed_seconds = current_time - start_time; // 시작 시간부터 현재까지 경과한 시간을 측정
+
+		if (HighLevel) { //스테이지 3,4번만 해당. 고난이도용
+			if (elapsed_seconds.count() >= 3.0) { // 게임 시작 후 3초가 경과했을 때 적 생성
+				printEnemy(enemy.getX(), enemy.getY()); // 적의 현재 위치를 화면에 출력
+				if (turnCount % 1 == 0) { // 플레이어 이동할 때마다 적도 같이 이동
+					enemy.moveTowardsExit(player.getX(), player.getY()); // 적이 플레이어 쪽으로 이동
+				}
+				if (player.getX() == enemy.GetX() && player.getY() == enemy.GetY()) { // 플레이어가 적에게 잡힐 경우(적의 범위는 2칸), 탈출 실패 !
+					DrawGameOver(); 
+					system("cls");
+					break;
+				}
+			}
+		}
 
 		player.handleInput(); // 키보드 입력 받는 함수 호출
 		turnCount++;		  // 키보드 입력시 숫자 증가

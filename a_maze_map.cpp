@@ -43,6 +43,14 @@ void printMaze(int player_x, int player_y, int end_x, int end_y) {
     }
 }
 
+// 적 출력 함수
+void printEnemy(int enemy_x, int enemy_y) {
+    gotoxy(enemy_x, enemy_y);
+    TextColor(DEEP_RED);
+    cout << "♣"; // 적 아이콘
+    TextColor(DEEP_WHITE);
+}
+
 bool exist(int x, int y) {  //좌표가 유효한지 확인
     return x >= 0 && x < N&& y >= 0 && y < N;
 }

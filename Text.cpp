@@ -1,6 +1,13 @@
 ﻿#include <iostream>
 #include "Text.hpp"
 
+// 위치를 지정하여 적 아이콘 출력
+void gotoxy(int x, int y) 
+{
+	COORD pos = { static_cast<SHORT>(x), static_cast<SHORT>(y) };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+
 // 위치를 지정하여 문자열 출력
 void gotoxy(int x, int y, const char* s)
 {

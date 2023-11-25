@@ -27,6 +27,7 @@ FMOD::Sound* Stg3Lv2(nullptr); // 노인분들을 위한 스테이지 Level 2 BG
 FMOD::Sound* Die(nullptr); // 플레이어 사망 효과음 재생 포인터 생성
 FMOD::Sound* Select(nullptr); // 선택 효과음 재생 포인터 생성
 FMOD::Sound* Stage_Clear(nullptr); // 스테이지 통과 효과음 재생 포인터 생성
+FMOD::Sound* GameOver(nullptr); // 적에게 잡혀 탈출 실패 효과음 재생 포인터 생성
 FMOD::Channel* channel1(nullptr); // 채널 1에서 배경음악을 재생
 FMOD::Channel* channel2(nullptr); // 채널 2에서 효과음을 재생
 FMOD_RESULT result; // FMOD 관련 함수가 잘 작동하는지의 여부를 체크하기 위한 변수를 생성
@@ -239,6 +240,8 @@ int DrawStageMenu() { // 플레이어 연령 별 스테이지를 선택하는 �
 }
 
 int BombCount;	  // 폭탄 개수 저장 변수
+bool HighLevel;   // 적 생성 여부 판단
+
 int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 	Fmod->createStream(".\\Sounds\\Menu_SelectStage.ogg", FMOD_LOOP_NORMAL, 0, &StageBGM); // 스테이지 선택 메뉴 배경음악 사운드 객체 생성.
 	Fmod->playSound(StageBGM, 0, false, &channel1); // 스테이지 선택 메뉴 배경음악 재생
@@ -254,6 +257,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->playSound(Stg1Lv1, 0, false, &channel1); // 유아용 스테이지 Level 1 BGM 재생
 			system("cls");
 			BombCount = 0;
+			HighLevel = false;
 			Playing(13);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -263,6 +267,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->playSound(Stg1Lv2, 0, false, &channel1); // 유아용 스테이지 Level 2 BGM 재생
 			system("cls");
 			BombCount = 2;
+			HighLevel = false;
 			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -272,6 +277,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->playSound(Stg2Lv1, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 1 BGM 재생
 			system("cls");
 			BombCount = 4;
+			HighLevel = true;
 			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -281,6 +287,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			Fmod->playSound(Stg2Lv2, 0, false, &channel1); // 일반 플레이어용 스테이지 Level 2 BGM 재생
 			system("cls");
 			BombCount = 7;
+			HighLevel = true;
 			Playing(19);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -291,6 +298,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			system("cls");
 			system("mode con:cols=48 lines=16");
 			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
+			HighLevel = false;
 			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -302,6 +310,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			system("mode con:cols=50 lines=18");
 			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
 			BombCount = 1;
+			HighLevel = false;
 			Playing(17);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
 			break;
@@ -362,6 +371,52 @@ void DrawClear() { // 미로 탈출 성공하면 게임 클리어 화면을 그�
 	gotoxy(20, 17, "▦ 축하합니다~! 미로 탈출에 성공하셨습니다! ♩♪♬", DEEP_OC);
 	gotoxy(20, 20, "▦ 아무키나 누르면 스테이지 선택 화면으로 돌아갑니다.", DEEP_WHITE);
 	system("pause>null");
+}
+
+void DrawGameOver() { // 플레이어가 적에게 잡히면 탈출 실패 화면을 그리는 함수
+	Fmod->update();
+	Fmod->playSound(Stg1Lv1, 0, true, &channel1); // 게임을 플레이하는 동안 재생하였던 스테이지 BGM 재생 정지
+	Fmod->playSound(Stg1Lv2, 0, true, &channel1);
+	Fmod->playSound(Stg2Lv1, 0, true, &channel1);
+	Fmod->playSound(Stg2Lv2, 0, true, &channel1);
+	Fmod->playSound(Stg3Lv1, 0, true, &channel1);
+	Fmod->playSound(Stg3Lv2, 0, true, &channel1);
+	Fmod->update();
+	Fmod->createStream(".\\Sounds\\GameOver.mp3", FMOD_LOOP_OFF, 0, &GameOver); // 스테이지 클리어 효과음 객체 생성
+	Fmod->playSound(GameOver, 0, false, &channel2); // 스테이지 클리어 효과음 재생
+	Fmod->update();
+
+	fontSize(16); // 원래의 글꼴 크기로 복원
+	system("mode con:cols=94 lines=30"); // 원래의 콘솔 창 크기로 복원
+	TextColor(DEEP_WHITE); // 메인 화면의 테두리와 디자인 요소는 그대로 출력
+	gotoxy(2, 1, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	gotoxy(2, 2, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 27, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 28, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	TextColor(DEEP_YELLOW);
+	gotoxy(24, 5, "★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+	gotoxy(24, 13, "★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆★☆");
+	gotoxy(6, 25, "★ 즐거운 BGM과 함께하는 아찔아찔 미로게임~♬");
+	TextColor(DEEP_WHITE);
+	gotoxy(70, 25, "Made by Object");
+	TextColor(DEEP_OC);
+	gotoxy(66, 25, "▦");
+	gotoxy(86, 25, "▦");
+	TextColor(DEEP_JAJU);
+	gotoxy(68, 25, "δ");
+	gotoxy(84, 25, "δ");
+
+	TextColor(DEEP_RED);
+	gotoxy(29, 7,  "  #####      #      #####    #       ");
+	gotoxy(29, 8,  "  #         # #       #      #       ");
+	gotoxy(29, 9,  "  #####    #####      #      #       ");
+	gotoxy(29, 10, "  #        #   #      #      #       ");
+	gotoxy(29, 11, "  #        #   #    #####    #####   ");
+	gotoxy(20, 17, "▦ 적에게 잡혀, 미로 탈출에 실패하셨습니다 ㅠㅠㅠ", DEEP_OC);
+	gotoxy(20, 20, "▦ 아무키나 누르면 스테이지 선택 화면으로 돌아갑니다.", DEEP_WHITE);
+	system("pause>null");
+	Fmod->playSound(GameOver, 0, true, &channel2);
+	Fmod->update();
 }
 
 int main(void)
