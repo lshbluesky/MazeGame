@@ -170,6 +170,7 @@ void DrawGameInfo() // 게임 정보 화면을 출력하는 함수
 	gotoxy(6, 5, "※ 게임 정보 ※");
 	TextColor(DEEP_WHITE);
 	gotoxy(6, 7, "DFS 알고리즘을 활용하여 생성된 미로를 지정된 장소로 이동하여 탈출하는 게임입니다.");
+	gotoxy(6, 8, "일반 플레이어용 스테이지는 BFS 알고리즘 방식의 적이 3초후에 생성되고 쫓아옵니다.");
 	TextColor(DEEP_OC);
 	gotoxy(6, 10, "▦ 스테이지 및 난이도 구성");
 	TextColor(DEEP_YELLOW);
@@ -191,7 +192,8 @@ void DrawGameInfo() // 게임 정보 화면을 출력하는 함수
 	gotoxy(42, 13, "◈ : 도착 지점");
 	gotoxy(42, 14, "♠ : 폭탄(밟으면 원위치로)");
 	gotoxy(42, 15, "■ : 벽");
-
+	gotoxy(42, 16, "♣ : 적(적의 범위는 2칸,");
+	gotoxy(42, 17, "        잡히면 게임 종료)");
 	TextColor(DEEP_OC); // 조작키 설명 입력
 	gotoxy(71, 10, "▦ 조작키 설명");
 	TextColor(DEEP_WHITE);
