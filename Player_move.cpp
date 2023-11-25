@@ -6,13 +6,13 @@
 #include<map>
 #include<chrono>
 #include <vector>
+#include <chrono>
 #include "Text.hpp"
 #include "fmod.hpp"
 #include "Player_move.hpp"
 #include "a_maze_map.hpp"
 using namespace std;
 using namespace chrono;
-
 
 extern FMOD::System* Fmod; // Fmod 시스템 클래스를 가리키는 Fmod 포인터를 외부 참조
 extern FMOD::Sound* Die; // 플레이어 사망 효과음 재생 포인터를 외부 참조
@@ -21,8 +21,9 @@ extern FMOD::Channel* channel2; // 채널 2에서 효과음을 재생하도록 �
 extern int N; // a_maze_map.cpp 에서 참조한 미로 크기 
 extern vector<vector<int>> maze; // a_maze_map.cpp 에서 참조한 이차원 벡터 미로
 int MAZE_SIZE = N; // 미로 크기
-extern int BombCount;// main.cpp 에서 참조한 폭탄 개수
-extern bool HighLevel;// main.cpp 에서 참조한 적 기능 포함 여부
+extern chrono::steady_clock::time_point startTime; // 플레이 시간 측정을 위한 전역 변수를 외부 참조
+extern int BombCount; // main.cpp 에서 참조한 폭탄 개수
+extern bool HighLevel; // main.cpp 에서 참조한 적 기능 포함 여부
 
 class Move { // 이동 함수를 담당하는 기본 클래스
 public:
@@ -234,6 +235,8 @@ void Playing(int size) {
 	MAZE_SIZE = size; // 매개 변수 size 로 MAZE_SIZE 정적 변수 재설정
 	maze.clear();
 	maze.resize(size, vector<int>(size, 1)); // 매개 변수 size 로 이차원 벡터 미로 정적 변수의 크기 재설정
+
+	startTime = chrono::steady_clock::now(); // 플레이 시간 측정 시작
 
 	srand(static_cast<unsigned>(time(0))); // 난수 생성기 초기화
 	StartMaze(); // 미로를 그리기 위한 준비 및 미로 생성 함수 호출

@@ -1,8 +1,10 @@
 ﻿#include <iostream>
 #include <conio.h>
+#include <chrono>
 #include "Text.hpp"
 #include "fmod.hpp"
 #include "Player_move.hpp"
+#include "ranking.hpp"
 
 // 키보드 값
 #define UP 0
@@ -32,6 +34,11 @@ FMOD::Channel* channel1(nullptr); // 채널 1에서 배경음악을 재생
 FMOD::Channel* channel2(nullptr); // 채널 2에서 효과음을 재생
 FMOD_RESULT result; // FMOD 관련 함수가 잘 작동하는지의 여부를 체크하기 위한 변수를 생성
 void* extradriverdata(nullptr); // FMOD 라이브러리의 init()에서 사용되는 포인터
+
+// 플레이 시간 측정을 위한 전역 변수를 외부 참조
+extern chrono::steady_clock::time_point startTime;
+extern chrono::steady_clock::time_point endTime;
+extern chrono::duration<double> elapsed_seconds;
 
 // 유니버셜 디자인 - 글꼴 크기 조절을 위한 구조체 전역 변수 정의
 CONSOLE_FONT_INFOEX fontInfo;
@@ -107,7 +114,8 @@ public:
 		y = 14;
 		gotoxy(x - 3, y, "▶ 게 임 시 작", DEEP_WHITE);
 		gotoxy(x, y + 1, "게 임 정 보", DEEP_WHITE);
-		gotoxy(x, y + 2, "   종 료   ", DEEP_WHITE);
+		gotoxy(x, y + 2, "랭 킹 보 기", DEEP_WHITE);
+		gotoxy(x, y + 3, "   종 료   ", DEEP_WHITE);
 		Fmod->createSound(".\\Sounds\\Select.mp3", FMOD_LOOP_OFF, 0, &Select); // 선택 효과음 객체 생성
 	}
 
@@ -116,7 +124,7 @@ public:
 			int n = keyControl(); //  키보드 이벤트를 키값으로 받아오기
 			switch (n) {
 			case UP: { // 입력된 키의 값이 UP 인 경우 (w)
-				if (y > 14) { // y는 14~16 까지만 이동
+				if (y > 14) { // y는 14~17 까지만 이동
 					gotoxy(x - 3, y, "  "); // x-2 하는 이유는 "▶"를 두 칸 이전에 출력하기 위해 / "  " : 원래 위치 지움
 					gotoxy(x - 3, --y, "▶"); // 새로 이동한 위치로 이동 / "▶" 다시 그리기
 				}
@@ -124,7 +132,7 @@ public:
 				break;
 			}
 			case DOWN: { // 입력된 키의 값이 UP 인 경우 (s)
-				if (y < 16) { // 최대 16
+				if (y < 17) { // 최대 17
 					gotoxy(x - 3, y, "  ");
 					gotoxy(x - 3, ++y, "▶");
 				}
@@ -194,6 +202,33 @@ void DrawGameInfo() // 게임 정보 화면을 출력하는 함수
 
 	gotoxy(6, 22, "※ 아무키나 누르면 메인 화면으로 돌아갑니다...", DEEP_WHITE);
 	system("pause>null"); // 게임 정보 화면을 출력하고 아무 키를 입력받을 때까지 일시정지, 아무 키나 누르면 다시 메인 화면으로 돌아감.
+	Fmod->playSound(Select, 0, false, &channel2); // 선택 효과음 재생
+	system("cls");
+}
+
+void DrawRanking() // 플레이어 별 플레이 시간의 순위 랭킹 화면을 출력하는 함수
+{
+	TextColor(DEEP_WHITE); // 메인 화면의 테두리와 디자인 요소는 그대로 출력
+	gotoxy(2, 1, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	gotoxy(2, 2, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 27, "□  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □  □");
+	gotoxy(2, 28, "■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■□■");
+	TextColor(DEEP_WHITE);
+	gotoxy(70, 25, "Made by Object");
+	TextColor(DEEP_OC);
+	gotoxy(66, 25, "▦");
+	gotoxy(86, 25, "▦");
+	TextColor(DEEP_JAJU);
+	gotoxy(68, 25, "δ");
+	gotoxy(84, 25, "δ");
+
+	TextColor(DEEP_YELLOW); // 이 부분부터 플레이어 별 순위 랭킹 정보 입력
+	gotoxy(6, 4, "※ 플레이어 별 순위 랭킹 정보 ※");
+	TextColor(DEEP_WHITE);
+	showRanking(); // 플레이어와 플레이 시간의 순위 랭킹을 출력하는 함수 호출
+
+	gotoxy(45, 4, "▦ 아무키나 누르면 메인 화면으로 돌아갑니다...", DEEP_WHITE);
+	system("pause>null"); // 순위 랭킹 화면을 출력하고 아무 키를 입력받을 때까지 일시정지, 아무 키나 누르면 다시 메인 화면으로 돌아감.
 	Fmod->playSound(Select, 0, false, &channel2); // 선택 효과음 재생
 	system("cls");
 }
@@ -330,6 +365,8 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 }
 
 void DrawClear() { // 미로 탈출 성공하면 게임 클리어 화면을 그리는 함수
+	endTime = chrono::steady_clock::now(); // 플레이 시간 측정 종료
+	elapsed_seconds = endTime - startTime;
 	Fmod->update();
 	Fmod->playSound(Stg1Lv1, 0, true, &channel1); // 게임을 플레이하는 동안 재생하였던 스테이지 BGM 재생 정지
 	Fmod->playSound(Stg1Lv2, 0, true, &channel1);
@@ -369,8 +406,12 @@ void DrawClear() { // 미로 탈출 성공하면 게임 클리어 화면을 그�
 	gotoxy(24, 10, "  #        #       #        #   #    #   #  ");
 	gotoxy(24, 11, "   ####    #####   #####    #   #    #   #  ");
 	gotoxy(20, 17, "▦ 축하합니다~! 미로 탈출에 성공하셨습니다! ♩♪♬", DEEP_OC);
-	gotoxy(20, 20, "▦ 아무키나 누르면 스테이지 선택 화면으로 돌아갑니다.", DEEP_WHITE);
-	system("pause>null");
+	gotoxy(20, 20, "▦ 플레이어의 닉네임 입력 : ", DEEP_WHITE);
+	//gotoxy(20, 20, "▦ 아무키나 누르면 스테이지 선택 화면으로 돌아갑니다.", DEEP_WHITE);
+	//system("pause>null");
+	cin.clear(); // cin 오류 플래그를 초기화
+	cin.ignore(LLONG_MAX, '\n'); // 충분히 큰 수(LLONG_MAX) 만큼 입력 버퍼를 비워서 플레이어 닉네임을 입력받지 못 하는 문제를 해결
+	PlayTime(); // 게임 클리어 시 PlayTime 함수를 호출하여 플레이 시간을 파일에 기록 및 닉네임 입력
 }
 
 void DrawGameOver() { // 플레이어가 적에게 잡히면 탈출 실패 화면을 그리는 함수
@@ -449,7 +490,11 @@ int main(void)
 			system("cls");
 			DrawGameInfo();
 			break;
-		case 2: // 게임 종료를 선택한 경우
+		case 2: // 게임 정보를 선택한 경우
+			system("cls");
+			DrawRanking();
+			break;
+		case 3: // 게임 종료를 선택한 경우
 			return 0;
 		}
 	}
