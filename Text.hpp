@@ -11,6 +11,7 @@ enum COLOR {
 	BLACK, BLUE, GREEN, OC, RED, JAJU, YELLOW, WHITE, GRAY, DEEP_BLUE, DEEP_GREEN, DEEP_OC, DEEP_RED, DEEP_JAJU, DEEP_YELLOW, DEEP_WHITE
 };
 
+void gotoxy(int x, int y);
 void gotoxy(int x, int y, const char* s);
 void gotoxy(int x, int y, const char* s, int Color);
 void Speak(const char speaking[]);
