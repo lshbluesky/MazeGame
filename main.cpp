@@ -382,7 +382,7 @@ void DrawGameOver() { // 플레이어가 적에게 잡히면 탈출 실패 화�
 	Fmod->playSound(Stg3Lv1, 0, true, &channel1);
 	Fmod->playSound(Stg3Lv2, 0, true, &channel1);
 	Fmod->update();
-	Fmod->createSound(".\\Sounds\\GameOver.mp3", FMOD_LOOP_OFF, 0, &GameOver); // 스테이지 클리어 효과음 객체 생성
+	Fmod->createStream(".\\Sounds\\GameOver.mp3", FMOD_LOOP_OFF, 0, &GameOver); // 스테이지 클리어 효과음 객체 생성
 	Fmod->playSound(GameOver, 0, false, &channel2); // 스테이지 클리어 효과음 재생
 	Fmod->update();
 
