@@ -335,6 +335,7 @@ int StageMenu() { // 스테이지 선택 메뉴 화면을 담당하는 함수
 			system("cls");
 			system("mode con:cols=48 lines=16");
 			fontSize(38); // 글꼴 크기를 크게 조절(유니버셜 디자인)
+			BombCount = 0;
 			HighLevel = false;
 			Playing(15);
 			Fmod->playSound(StageBGM, 0, false, &channel1); // 게임을 클리어한 후에, 스테이지 선택 메뉴 배경음악 다시 재생
