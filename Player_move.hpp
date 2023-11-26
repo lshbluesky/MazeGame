@@ -11,6 +11,5 @@ void DrawClear();
 void Playing(int size);
 void cursor(int n); // 커서 깜박임 제거
 void StartFinishPoint(int MAZE_SIZE);
-void bombset();
 
 #endif
