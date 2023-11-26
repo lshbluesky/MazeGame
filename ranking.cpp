@@ -93,6 +93,7 @@ void showRanking() {
         rankingFile.close();
     }
     else {
-        cerr << "랭킹 파일을 열 수 없습니다." << endl;
+        gotoxy(6, 7, "▦ 게임을 플레이한 기록이 없기 때문에 순위 랭킹이 존재하지 않습니다.");
+        gotoxy(6, 9, "▦ 미로 게임을 최소 한 번 클리어해야 순위 랭킹이 표시됩니다.");
     }
 }
