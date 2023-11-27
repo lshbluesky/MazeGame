@@ -409,9 +409,7 @@ void DrawClear() { // 미로 탈출 성공하면 게임 클리어 화면을 그�
 	gotoxy(24, 10, "  #        #       #        #   #    #   #  ");
 	gotoxy(24, 11, "   ####    #####   #####    #   #    #   #  ");
 	gotoxy(20, 17, "▦ 축하합니다~! 미로 탈출에 성공하셨습니다! ♩♪♬", DEEP_OC);
-	gotoxy(20, 20, "▦ 플레이어의 닉네임 입력 : ", DEEP_WHITE);
-	//gotoxy(20, 20, "▦ 아무키나 누르면 스테이지 선택 화면으로 돌아갑니다.", DEEP_WHITE);
-	//system("pause>null");
+	gotoxy(20, 20, "▦ 플레이어의 닉네임 입력 (최대 20자) : ", DEEP_WHITE);
 	cin.clear(); // cin 오류 플래그를 초기화
 	cin.ignore(LLONG_MAX, '\n'); // 충분히 큰 수(LLONG_MAX) 만큼 입력 버퍼를 비워서 플레이어 닉네임을 입력받지 못 하는 문제를 해결
 	PlayTime(); // 게임 클리어 시 PlayTime 함수를 호출하여 플레이 시간을 파일에 기록 및 닉네임 입력
